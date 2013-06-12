@@ -1,6 +1,6 @@
 # CTX - Chess Tournament Exchange Format
 
-The __Chess T__ournament E__x__change Format is an application of XML for describing chess tournaments. It aims to include all relevant data of a chess tournament, i.e. all information about participating players and teams, their results and rankings as well as general tournament information like round times, names of all arbiters etc. It shall be a source format for rating calculations (Elo, DWZ, ...), easy to parse and exchange. Its official filename extension is `.ctx`.
+The __Chess T__ournament E<b>x</b>change Format is an application of XML for describing chess tournaments. It aims to include all relevant data of a chess tournament, i.e. all information about participating players and teams, their results and rankings as well as general tournament information like round times, names of all arbiters etc. It shall be a source format for rating calculations (Elo, DWZ, ...), easy to parse and exchange. Its official filename extension is `.ctx`.
 
 # Validation
 
