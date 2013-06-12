@@ -1,0 +1,468 @@
+<?xml version="1.0"?>
+<tournament type="individual">
+  <information>
+    <name>Test Tournament with a very long title</name>
+    <date>
+      <start>2013-05-18</start>
+      <end>2013-05-26</end>
+    </date>
+    <location>
+      <name>Los Angeles</name>
+    </location>
+    <time-controls>
+      <period number="1" type="string">40/90min + 30s/move</period>
+      <period number="2" type="string">Rest/30min + 30s/mov</period>
+    </time-controls>
+  </information>
+  <settings>
+    <general>
+      <rounds>9</rounds>
+    </general>
+  </settings>
+  <players>
+    <player id="1">
+      <name>
+        <prename>Mendez</prename>
+        <surname>Allison</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1977-07-23</birth>
+      <identifiers>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="DWZ">1498</rating>
+      </ratings>
+    </player>
+    <player id="2">
+      <name>
+        <prename>Gregory</prename>
+        <surname>Byrd</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1977-03-18</birth>
+      <identifiers>
+        <fide>
+          <id>28854450</id>
+        </fide>
+        <federation code="USA"/>
+        <club federation="GER">
+          <name>SGEM Dreisamtal</name>
+          <id>10820</id>
+          <member-id>023</member-id>
+        </club>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1926</rating>
+        <rating type="DWZ">1938</rating>
+      </ratings>
+    </player>
+    <player id="3">
+      <name>
+        <prename>Robert</prename>
+        <surname>Deloach</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1973-01-10</birth>
+      <identifiers>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="DWZ">1498</rating>
+      </ratings>
+    </player>
+    <player id="4">
+      <name>
+        <prename>Evelyn</prename>
+        <surname>Dorsay</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1996-12-20</birth>
+      <identifiers>
+        <fide>
+          <id>24603660</id>
+        </fide>
+        <federation code="USA"/>
+        <club federation="GER">
+          <name>LSV Turm Lippstadt</name>
+          <id>64231</id>
+          <member-id>104</member-id>
+        </club>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1909</rating>
+        <rating type="DWZ">2036</rating>
+      </ratings>
+    </player>
+    <player id="5">
+      <name>
+        <prename>Cynthia</prename>
+        <surname>Forbes</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1973-12-07</birth>
+      <identifiers>
+        <fide>
+          <id>24692014</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1697</rating>
+        <rating type="DWZ">1736</rating>
+      </ratings>
+    </player>
+    <player id="6">
+      <name>
+        <prename>Carlos</prename>
+        <surname>Frampton</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1983-07-27</birth>
+      <identifiers>
+        <fide>
+          <id>4673388</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1723</rating>
+        <rating type="DWZ">1749</rating>
+      </ratings>
+    </player>
+    <player id="7">
+      <name>
+        <prename>David</prename>
+        <surname>Gib</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1986-06-15</birth>
+      <identifiers>
+        <fide>
+          <id>12345678</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">2085</rating>
+        <rating type="DWZ">2090</rating>
+      </ratings>
+    </player>
+    <player id="8">
+      <name>
+        <prename>Rosemary</prename>
+        <surname>Gilchrist</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1954-06-17</birth>
+      <identifiers>
+        <fide>
+          <id>1391766</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1844</rating>
+        <rating type="DWZ">1740</rating>
+      </ratings>
+    </player>
+    <player id="9">
+      <name>
+        <prename>Kassandra</prename>
+        <surname>Golla</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1989-08-27</birth>
+      <identifiers>
+        <fide>
+          <id>12246292</id>
+        </fide>
+        <federation code="USA"/>
+        <club>
+          <name>Lockeford</name>
+        </club>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1689</rating>
+        <rating type="DWZ">1651</rating>
+      </ratings>
+    </player>
+    <player id="10">
+      <name>
+        <prename>Anthony</prename>
+        <surname>Henderson</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1973-11-29</birth>
+      <identifiers>
+        <fide>
+          <id>24630992</id>
+        </fide>
+        <federation code="USA"/>
+        <club federation="GER">
+          <name>SF Baden-Lichtental</name>
+          <id>10613</id>
+          <member-id>123</member-id>
+        </club>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1933</rating>
+        <rating type="DWZ">1914</rating>
+      </ratings>
+    </player>
+    <player id="11">
+      <name>
+        <prename>Rebekah</prename>
+        <surname>Hightower</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1956-06-07</birth>
+      <identifiers>
+        <fide>
+          <id>24692174</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1753</rating>
+        <rating type="DWZ">1877</rating>
+      </ratings>
+    </player>
+    <player id="12">
+      <name>
+        <prename>Phillip</prename>
+        <surname>Hughes</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1987-04-01</birth>
+      <identifiers>
+        <fide>
+          <id>2345678</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">2019</rating>
+        <rating type="DWZ">2077</rating>
+      </ratings>
+    </player>
+    <player id="13">
+      <name>
+        <prename>Zona</prename>
+        <surname>Johnson</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1965-08-17</birth>
+      <identifiers>
+        <fide>
+          <id>24655845</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1846</rating>
+        <rating type="DWZ">1832</rating>
+      </ratings>
+    </player>
+    <player id="14">
+      <name>
+        <prename>Robert</prename>
+        <surname>Laslay</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1967-01-23</birth>
+      <identifiers>
+        <fide>
+          <id>13901919</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1738</rating>
+        <rating type="DWZ">1708</rating>
+      </ratings>
+    </player>
+    <player id="15">
+      <name>
+        <prename>Dennis</prename>
+        <surname>Lyons</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1949-01-29</birth>
+      <identifiers>
+        <fide>
+          <id>24663456</id>
+        </fide>
+        <federation code="USA"/>
+        <club federation="GER">
+          <name>SV Pliezhausen</name>
+          <id>C0345</id>
+          <member-id>104</member-id>
+        </club>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1896</rating>
+        <rating type="DWZ">1904</rating>
+      </ratings>
+    </player>
+    <player id="16">
+      <name>
+        <prename>James</prename>
+        <surname>Matus</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1973-04-22</birth>
+      <identifiers>
+        <fide>
+          <id>12913060</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1637</rating>
+        <rating type="DWZ">1655</rating>
+      </ratings>
+    </player>
+    <player id="17">
+      <name>
+        <prename>Jessie</prename>
+        <surname>Nichols</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1984-12-04</birth>
+      <identifiers>
+        <fide>
+          <id>24945412</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1698</rating>
+        <rating type="DWZ">1669</rating>
+      </ratings>
+    </player>
+    <player id="18">
+      <name>
+        <prename>Jacob</prename>
+        <surname>Norton</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1996-07-25</birth>
+      <identifiers>
+        <fide>
+          <id>12945678</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1871</rating>
+        <rating type="DWZ">1778</rating>
+      </ratings>
+    </player>
+    <player id="19">
+      <name>
+        <prename>Rhonda</prename>
+        <surname>Ray</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1985-12-07</birth>
+      <identifiers>
+        <fide>
+          <id>24652123</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1891</rating>
+        <rating type="DWZ">1779</rating>
+      </ratings>
+    </player>
+    <player id="20">
+      <name>
+        <prename>Isabel</prename>
+        <surname>Rivera</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1993-07-06</birth>
+      <identifiers>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="DWZ">763</rating>
+      </ratings>
+    </player>
+    <player id="21">
+      <name>
+        <prename>Edwin</prename>
+        <surname>Stone</surname>
+      </name>
+      <gender>male</gender>
+      <birth>2000-08-01</birth>
+      <identifiers>
+        <fide>
+          <id>42931810</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1576</rating>
+        <rating type="DWZ">1744</rating>
+      </ratings>
+    </player>
+    <player id="22">
+      <name>
+        <prename>Lavern</prename>
+        <surname>Thomas</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1974-10-22</birth>
+      <identifiers>
+        <fide>
+          <id>24639679</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1675</rating>
+        <rating type="DWZ">1620</rating>
+      </ratings>
+    </player>
+    <player id="23">
+      <name>
+        <prename>Carrie</prename>
+        <surname>Thompson</surname>
+      </name>
+      <gender>female</gender>
+      <birth>1968-10-18</birth>
+      <identifiers>
+        <fide>
+          <id>24692234</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1789</rating>
+        <rating type="DWZ">1902</rating>
+      </ratings>
+    </player>
+    <player id="24">
+      <name>
+        <prename>Michael</prename>
+        <surname>Young</surname>
+      </name>
+      <gender>male</gender>
+      <birth>1990-05-14</birth>
+      <identifiers>
+        <fide>
+          <id>22682476</id>
+        </fide>
+        <federation code="USA"/>
+      </identifiers>
+      <ratings>
+        <rating type="Elo">1925</rating>
+        <rating type="DWZ">1933</rating>
+      </ratings>
+    </player>
+  </players>
+</tournament>
+
