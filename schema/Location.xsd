@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Location"
+		xmlns="http://ctx.chess.io/Location"
+		version="1.0.0"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			Location information.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="location">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+
+			<xs:element name="address" type="address" minOccurs="0" />
+
+			<xs:element name="phone" type="xs:string" minOccurs="0" />
+
+			<xs:element name="information" minOccurs="0">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="catering" type="xs:boolean" minOccurs="0" />
+						<xs:element name="disabled-friendly" type="xs:boolean" minOccurs="0" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="address">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="0" />
+			<xs:element name="street" type="xs:string" />
+			<xs:element name="zip" type="xs:string" minOccurs="0" />
+			<xs:element name="city" type="xs:string" />
+			<xs:element name="country" type="xs:string" minOccurs="0" />
+			<xs:element name="coordinates" type="coordinates" minOccurs="0">
+				<xs:alternative test="(@type = 'WGS84' or (count(@type) eq 0))" type="coordinates-WGS84" />
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

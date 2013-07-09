@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Person"
+		xmlns="http://ctx.chess.io/Person"
+		version="1.0.0"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			Person information.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="person">
+		<xs:sequence>
+			<xs:element name="name" type="xs:anyType">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Two forms allowed to specify person's name:
+						  * as complex type [name-complex]
+						  * as string (deprecated) [name-string]
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:alternative test="@type eq 'string'" type="name-string" />
+				<xs:alternative test="true()" type="name-complex" />
+			</xs:element>
+
+			<xs:element name="gender" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="male" />
+						<xs:enumeration value="female" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:choice minOccurs="0">
+				<xs:element name="birth">
+					<xs:simpleType>
+						<xs:restriction base="xs:date">
+							<xs:assertion test="$value le current-date()" xerces:message="Birth date must not be in future">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										Birth date must not be in future.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:assertion>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="birth-year">
+					<xs:simpleType>
+						<xs:restriction base="xs:gYear">
+							<xs:assertion test="xs:int($value) le year-from-date(current-date())" xerces:message="Birth year must not be in future">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										Birth year must not be in future.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:assertion>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:choice>
+
+			<xs:element name="origin" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Free text to specify the origin of the player, e.g. its school or region.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="type" use="optional" default="">
+								<xs:simpleType>
+									<xs:union memberTypes="origin-type xs:string" />
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="identifiers" type="identifiers" minOccurs="0" />
+
+			<xs:element name="contact-information" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="address" type="address" minOccurs="0" />
+						
+						<xs:element name="phone" type="phone" minOccurs="0" maxOccurs="unbounded" />
+
+						<xs:element name="mail" type="mail" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+
+					<xs:assert test="count(*) ge 0" xerces:message="'contact' node must not be empty.">
+						<xs:annotation>
+							<xs:documentation xml:lang="DE">
+								Wenn "contact" vorhanden ist, dann darf es nicht leer sein.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="name-string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" fixed="string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="name-complex">
+		<xs:sequence>
+			<xs:element name="prename" type="xs:string" />
+
+			<xs:element name="surname" type="xs:string" />
+
+			<xs:element name="display-name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Displayed name if different from prename/surname.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="academic-title" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="origin-type">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Possible values for person/origin/@type.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="school" />
+			<xs:enumeration value="city" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="identifiers">
+		<xs:sequence>
+			<xs:element name="fide" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="id">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									FIDE-ID, 7 or 8 digits.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:simpleType>
+								<xs:restriction base="xs:positiveInteger">
+									<xs:minInclusive value="1000000" />
+									<xs:maxExclusive value="100000000" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="federation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Federation which the person is reported for at the FIDE.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="id" type="xs:string" minOccurs="0" />
+					</xs:sequence>
+
+					<xs:attribute name="code" type="Country-Code" use="required" />
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="club" type="identifier-club" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						The person's active club.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:alternative test="@federation and (@federation eq 'GER' or @federation eq 'DE')" type="player-identifier-club_GER" />
+				<xs:alternative test="true()" type="player-identifier-club" />
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

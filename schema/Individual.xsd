@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Individual"
+		xmlns="http://ctx.chess.io/Individual"
+		version="1.0.0"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org"
+		xmlns:general="http://ctx.chess.io">
+
+	<xs:import namespace="http://ctx.chess.io" schemaLocation="CTX.xsd" />
+
+	<xs:complexType name="tournament">
+		<xs:complexContent>
+			<xs:extension base="general:tournament">
+
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

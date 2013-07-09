@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Rating"
+		xmlns="http://ctx.chess.io/Rating"
+		version="1.0.0"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			Ratings.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="system">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Elo" />
+			<xs:enumeration value="DWZ" />
+			<xs:enumeration value="" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

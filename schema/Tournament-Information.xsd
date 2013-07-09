@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Tournament-Information"
+		xmlns="http://ctx.chess.io/Tournament-Information"
+		version="1.0.0"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org"
+		xmlns:general="http://ctx.chess.io"
+		xmlns:location="http://ctx.chess.io/Location"
+		xmlns:rating="http://ctx.chess.io/Rating">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			General, fix tournament information.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:import namespace="http://ctx.chess.io" schemaLocation="CTX.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Location" schemaLocation="Location.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Rating" schemaLocation="Rating.xsd" />
+
+	<xs:complexType name="information">
+		<xs:sequence>
+			<xs:element name="name" type="name" />
+
+			<xs:element name="description" type="xs:string" minOccurs="0" />
+
+			<xs:element name="date">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="start" type="xs:date" />
+						<xs:element name="end" type="xs:date" />
+					</xs:sequence>
+
+					<xs:assert test="start le end" xerces:message="Start date must be before end date">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Check if start date is less or equal to its end.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="location" type="location:location" minOccurs="0" />
+
+			<xs:element name="time-controls" type="xs:anyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Two forms allowed to specify time controls:
+							* as complex type [time-controls-complex]
+							* (deprecated) as string [time-controls-string]
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:alternative test="if (count(@type) eq 1) then (@type eq 'string') else false()" type="time-controls-string" />
+				<xs:alternative test="true()" type="time-controls-complex" />
+			</xs:element>
+
+			<xs:element name="arbiters" type="xs:anyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						All arbiters, especially in leagues.
+						Two forms allowed to specify the arbiters:
+							* as complex type [arbiters-complex]
+							* (deprecated) as string [arbiters-string]
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:alternative test="@type and @type eq 'string'" type="arbiters-string" />
+				<xs:alternative test="true()" type="arbiters-complex" />
+			</xs:element>
+
+			<xs:element name="rating-versions" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rating" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:date">
+										<xs:attribute name="type" type="rating:system" use="optional" default="" />
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+
+				<xs:unique name="unique-rating-version">
+					<xs:selector xpath="rating" />
+					<xs:field xpath="@type" />
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="name">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="abbreviation" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="time-controls-string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" fixed="string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="time-controls-complex">
+		<xs:sequence>
+			<xs:element name="period" type="xs:anyType" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Allowed forms to specify time controls:
+						  * as complex type [period-complex]
+						  * as string (deprecated) [period-string]
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:alternative test="@type and @type eq 'string'" type="period-string" />
+				<xs:alternative test="true()" type="period-complex" />
+			</xs:element>
+		</xs:sequence>
+
+		<xs:assert test="every $i in 1 to count(period) satisfies (period[$i]/@number = $i)" xerces:message="Periods must be serially numbered, beginning with 1.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Periods are numbered consecutively.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="not(period[last()]/moves) or period[last()]/@type eq 'string'" xerces:message="Last period must not contain a 'move' node or must be of @type='string'.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Last period must not contain a 'move' node or must be of @type='string'.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="every $i in 1 to count(period)-1 satisfies (period[$i]/moves or period[$i]/@type eq 'string')" xerces:message="Every period except the last one must contain a 'move' node or must have Attribute @type='string' set.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Every period except the last one must contain a 'move' node or must have Attribute @type='string' set.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:complexType name="arbiters-string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" fixed="string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="arbiters-complex">
+		<xs:sequence>
+			<xs:element name="arbiter" type="arbiter" maxOccurs="unbounded" />
+		</xs:sequence>
+
+		<xs:assert test="every $i in 1 to count(arbiter) satisfies (arbiter[$i]/@id = $i)" xerces:message="Arbiters must be serially numbered, beginning with 1.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Arbiters are numbered consecutively.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="
+			every $i in 1 to count(arbiter)-1 satisfies (
+				if (arbiter[$i]/name/@type eq 'string') then (
+					if (arbiter[$i+1]/name/@type eq 'string') then (
+						compare(
+							lower-case(arbiter[$i]/name),
+							lower-case(arbiter[$i+1]/name)
+						) le 0
+					) else (
+						compare(
+							lower-case(arbiter[$i]/name),
+							lower-case(concat(arbiter[$i+1]/name/surname, ',', arbiter[$i+1]/name/prename, ',', arbiter[$i+1]/name/academic-title))
+						) le 0
+					)
+				) else (
+					if (arbiter[$i+1]/name/@type eq 'string') then (
+						compare(
+							lower-case(concat(arbiter[$i]/name/surname, ',', arbiter[$i]/name/prename, ',', arbiter[$i]/name/academic-title)),
+							lower-case(arbiter[$i+1]/name)
+						) le 0
+					) else (
+						compare(
+							lower-case(concat(arbiter[$i]/name/surname, ',', arbiter[$i]/name/prename, ',', arbiter[$i]/name/academic-title)),
+							lower-case(concat(arbiter[$i+1]/name/surname, ',', arbiter[$i+1]/name/prename, ',', arbiter[$i+1]/name/academic-title))
+						) le 0
+					)
+				)
+			)
+		" xerces:message="Arbiters must be sorted by their name.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Arbiters are sorted by their name.
+					Attention: Sorting depends on collation, i.e. by default
+					  'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:complexType name="period-string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" fixed="string" use="required" />
+
+				<xs:attribute name="number" use="required">
+					<xs:simpleType>
+						<xs:restriction base="xs:nonNegativeInteger" />
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="period-complex">
+		<xs:sequence>
+			<xs:element name="moves" minOccurs="0" type="xs:positiveInteger" />
+			<xs:element name="time" type="simple-time" />
+			<xs:element name="increment" type="simple-time" minOccurs="0" />
+		</xs:sequence>
+
+		<xs:attribute name="number" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger" />
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="arbiter">
+		<xs:complexContent>
+			<xs:extension base="person:person">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Additional information about a single arbiter.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:sequence>
+					<xs:element name="licence" minOccurs="0" type="arbiter-licence">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Arbiter's licence
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:alternative test="@federation = 'FIDE'" type="arbiter-licence-federation-FIDE" />
+						<xs:alternative test="@federation = 'GER' or @federation = 'DE'" type="arbiter-licence-federation-GER" />
+					</xs:element>
+				</xs:sequence>
+
+				<xs:attribute name="role" type="arbiter-role" />
+
+				<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>
