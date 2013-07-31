@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Rating"
+		xmlns="http://ctx.chess.io/Rating"
+		version="1.0.0"
+		elementFormDefault="unqualified"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			Ratings.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="rating">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="type" type="system" use="optional" default="" />
+
+				<xs:attribute name="estimated" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Flag whether the rating has been estimated by the organizers.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="rating_Elo">
+		<xs:simpleContent>
+			<xs:restriction base="rating">
+				<xs:minInclusive value="400" />
+				<xs:maxInclusive value="3500" />
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="rating_DWZ">
+		<xs:simpleContent>
+			<xs:restriction base="rating">
+				<xs:minInclusive value="400" />
+				<xs:maxInclusive value="3500" />
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="system">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Elo" />
+			<xs:enumeration value="DWZ" />
+			<xs:enumeration value="" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="system_ranking">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Adds @on-empty attribute to rating-system which can be used in
+				rankings.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:simpleContent>
+			<xs:extension base="system">
+				<xs:attribute name="on-empty" use="optional">
+					<xs:simpleType>
+						<xs:union memberTypes="xs:integer">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									If one of the players has no rating, a pseudo-rating can be specified
+									which will be used to calculate the average.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:union>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

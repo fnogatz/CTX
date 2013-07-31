@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Person"
+		xmlns="http://ctx.chess.io/Person"
+		version="1.0.0"
+		elementFormDefault="unqualified"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org"
+		xmlns:tournament="http://ctx.chess.io"
+		xmlns:contact="http://ctx.chess.io/Contact"
+		xmlns:club="http://ctx.chess.io/Club"
+		xmlns:rating="http://ctx.chess.io/Rating">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			Person information.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:import namespace="http://ctx.chess.io" schemaLocation="CTX.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Contact" schemaLocation="Contact.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Club" schemaLocation="Club.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Rating" schemaLocation="Rating.xsd" />
+
+	<xs:include schemaLocation="Country-Code.xsd" />
+
+	<xs:complexType name="person">
+		<xs:sequence>
+			<xs:element name="name" type="xs:anyType">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Two forms allowed to specify person's name:
+						  * as complex type [name-complex]
+						  * as string (deprecated) [name-string]
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:alternative test="@type eq 'string'" type="name-string" />
+				<xs:alternative test="true()" type="name-complex" />
+			</xs:element>
+
+			<xs:element name="gender" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="male" />
+						<xs:enumeration value="female" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+
+			<xs:choice minOccurs="0">
+				<xs:element name="birth">
+					<xs:simpleType>
+						<xs:restriction base="xs:date">
+							<xs:assertion test="$value le current-date()" xerces:message="Birth date must not be in future">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										Birth date must not be in future.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:assertion>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="birth-year">
+					<xs:simpleType>
+						<xs:restriction base="xs:gYear">
+							<xs:assertion test="xs:int($value) le year-from-date(current-date())" xerces:message="Birth year must not be in future">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										Birth year must not be in future.
+									</xs:documentation>
+								</xs:annotation>
+							</xs:assertion>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:choice>
+
+			<xs:element name="origin" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Free text to specify the origin of the player, e.g. its school or region.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="type" use="optional" default="">
+								<xs:simpleType>
+									<xs:union memberTypes="origin-type xs:string" />
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="identifiers" type="identifiers" minOccurs="0" />
+
+			<xs:element name="contact-information" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="address" type="contact:address" minOccurs="0" />
+						
+						<xs:element name="phone" type="contact:phone" minOccurs="0" maxOccurs="unbounded" />
+
+						<xs:element name="mail" type="contact:mail" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+
+					<xs:assert test="count(*) ge 0" xerces:message="'contact' node must not be empty.">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								'contact' node must not be empty.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="player">
+		<xs:complexContent>
+			<xs:extension base="person">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Additional information about the player.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:sequence>
+					<xs:element name="title" type="fide-title" minOccurs="0" />
+
+					<xs:element name="ratings" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="rating" type="rating:rating" minOccurs="1" maxOccurs="unbounded">
+									<xs:alternative test="@type='Elo'" type="rating:rating_Elo" />
+									<xs:alternative test="@type='DWZ'" type="rating:rating_DWZ" />
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+
+						<xs:unique name="unique-player-rating">
+							<xs:selector xpath="rating" />
+							<xs:field xpath="@type" />
+						</xs:unique>
+					</xs:element>
+				</xs:sequence>
+
+				<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+				<xs:attribute name="inactive" type="xs:boolean" default="false" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="arbiter">
+		<xs:complexContent>
+			<xs:extension base="person">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Additional information about a single arbiter.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:sequence>
+					<xs:element name="licence" minOccurs="0" type="arbiter-licence">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Arbiter's licence.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:alternative test="@federation = 'FIDE'" type="arbiter-licence-federation-FIDE" />
+						<xs:alternative test="@federation = 'GER' or @federation = 'DE'" type="arbiter-licence-federation-GER" />
+					</xs:element>
+				</xs:sequence>
+
+				<xs:attribute name="role" type="arbiter-role" />
+
+				<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="name-string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" fixed="string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="name-complex">
+		<xs:sequence>
+			<xs:element name="prename" type="xs:string" />
+
+			<xs:element name="surname" type="xs:string" />
+
+			<xs:element name="display-name" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Displayed name if different from prename/surname.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="academic-title" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="origin-type">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Possible values for person/origin/@type.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="school" />
+			<xs:enumeration value="city" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="identifiers">
+		<xs:sequence>
+			<xs:element name="fide" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="id">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									FIDE-ID, 7 or 8 digits.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:simpleType>
+								<xs:restriction base="xs:positiveInteger">
+									<xs:minInclusive value="1000000" />
+									<xs:maxExclusive value="100000000" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="federation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Federation which the person is reported for at the FIDE.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="id" type="xs:string" minOccurs="0" />
+					</xs:sequence>
+
+					<xs:attribute name="code" type="Country-Code" use="required" />
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="club" type="club:identifier" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						The person's active club.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:alternative test="@federation and (@federation eq 'GER' or @federation eq 'DE')" type="club:person-identifier_GER" />
+				<xs:alternative test="true()" type="club:person-identifier" />
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="fide-title">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GM" />
+			<xs:enumeration value="IM" />
+			<xs:enumeration value="FM" />
+			<xs:enumeration value="WGM" />
+			<xs:enumeration value="WIM" />
+			<xs:enumeration value="WFM" />
+			<xs:enumeration value="CM" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="arbiter-licence">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="federation">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Federation that handed out the licence.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:simpleType>
+						<xs:union memberTypes="Country-Code str_FIDE" />
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="str_FIDE">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FIDE" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="arbiter-licence-federation-FIDE">
+		<xs:simpleContent>
+			<xs:restriction base="arbiter-licence">
+				<xs:enumeration value="FA">
+					<xs:annotation>
+						<xs:documentation xml:lang="DE">
+							FIDE-Schiedsrichter
+						</xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+				<xs:enumeration value="IA">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							International Arbiter
+						</xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="arbiter-licence-federation-GER">
+		<xs:simpleContent>
+			<xs:restriction base="arbiter-licence">
+				<xs:enumeration value="NSR">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							National Arbiter
+						</xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+				<xs:enumeration value="RSR">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Regional Arbiter
+						</xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+				<xs:enumeration value="TL">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Arbiter
+						</xs:documentation>
+					</xs:annotation>
+				</xs:enumeration>
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="arbiter-role">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="chief" />
+			<xs:enumeration value="deputy" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="arbiters-string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" fixed="string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="arbiters-list">
+		<xs:sequence>
+			<xs:element name="arbiter" type="arbiter" maxOccurs="unbounded" />
+		</xs:sequence>
+
+		<xs:assert test="every $i in 1 to count(arbiter) satisfies (arbiter[$i]/@id = $i)" xerces:message="Arbiters must be serially numbered, beginning with 1.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Arbiters are numbered consecutively.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="
+			every $i in 1 to count(arbiter)-1 satisfies (
+				if (arbiter[$i]/name/@type eq 'string') then (
+					if (arbiter[$i+1]/name/@type eq 'string') then (
+						compare(
+							lower-case(arbiter[$i]/name),
+							lower-case(arbiter[$i+1]/name)
+						) le 0
+					) else (
+						compare(
+							lower-case(arbiter[$i]/name),
+							lower-case(concat(arbiter[$i+1]/name/surname, ',', arbiter[$i+1]/name/prename, ',', arbiter[$i+1]/name/academic-title))
+						) le 0
+					)
+				) else (
+					if (arbiter[$i+1]/name/@type eq 'string') then (
+						compare(
+							lower-case(concat(arbiter[$i]/name/surname, ',', arbiter[$i]/name/prename, ',', arbiter[$i]/name/academic-title)),
+							lower-case(arbiter[$i+1]/name)
+						) le 0
+					) else (
+						compare(
+							lower-case(concat(arbiter[$i]/name/surname, ',', arbiter[$i]/name/prename, ',', arbiter[$i]/name/academic-title)),
+							lower-case(concat(arbiter[$i+1]/name/surname, ',', arbiter[$i+1]/name/prename, ',', arbiter[$i+1]/name/academic-title))
+						) le 0
+					)
+				)
+			)
+		" xerces:message="Arbiters must be sorted by their name.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Arbiters are sorted by their name.
+					Attention: Sorting depends on collation, i.e. by default
+					  'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:complexType name="arbiters-references">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				List of referenced arbiters from /tournament/information/arbiters by their
+				@id. Optional specification of its @role.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="arbiter" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+
+					<xs:attribute name="role" type="arbiter-role" use="optional" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,436 @@
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Individual-Tournament"
+		xmlns="http://ctx.chess.io/Individual-Tournament"
+		version="1.0.0"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org"
+		xmlns:tournament="http://ctx.chess.io">
+
+	<xs:import namespace="http://ctx.chess.io" schemaLocation="CTX.xsd" />
+
+	<xs:complexType name="tournament">
+		<xs:complexContent>
+			<xs:extension base="tournament:tournament">
+				<xs:all>
+					<xs:element name="settings" type="settings" />
+
+					<xs:element name="rankings" type="rankings" minOccurs="0" />
+				</xs:all>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="settings">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Tournament settings.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:all>
+			<xs:element name="general">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="rounds" type="xs:positiveInteger">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Number of rounds.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+
+						<xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Games per round.
+									Optional. Implicitly 1.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="points-system" type="tournament:game-points" minOccurs="0">
+				<xs:unique name="s_unique-game-points-individuals_win">
+					<xs:selector xpath="win" />
+					<xs:field xpath="@attribute" />
+					<xs:field xpath="@color" />
+				</xs:unique>
+				<xs:unique name="s_unique-game-points-individuals_draw">
+					<xs:selector xpath="draw" />
+					<xs:field xpath="@attribute" />
+					<xs:field xpath="@color" />
+				</xs:unique>
+				<xs:unique name="s_unique-game-points-individuals_loss">
+					<xs:selector xpath="loss" />
+					<xs:field xpath="@attribute" />
+					<xs:field xpath="@color" />
+				</xs:unique>
+			</xs:element>
+
+<!-- 			<xs:element name="pairings" minOccurs="0">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="system" type="_s_pairings-system" minOccurs="0">
+							<xs:alternative type="_s_pairings-system-Swiss" test="@type eq 'Swiss'" />
+							<xs:alternative type="_s_pairings-system-Round-Robin" test="@type eq 'Round-Robin'" />
+						</xs:element>
+
+						<xs:element name="constraints" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Randbedingungen zur Ermittlung der Paarungen, etwa
+									feste Brettnummern oder Angabe der Runden, in denen
+									einzelne Spieler aussetzen.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="players">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="player" maxOccurs="unbounded">
+													<xs:annotation>
+														<xs:documentation xml:lang="DE">
+															Informationen zu einem Spieler, die nur die Paarungen
+															betreffen, und somit nicht in /tournament/players/player
+															gehören.
+														</xs:documentation>
+													</xs:annotation>
+
+													<xs:complexType>
+														<xs:all>
+															<xs:element name="fixed-board" type="xs:positiveInteger" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation xml:lang="DE">
+																		Feste Brettnummer.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+
+															<xs:element name="not-paired" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation xml:lang="DE">
+																		Angabe der Runden, in denen ein Spieler aussetzt.
+																	</xs:documentation>
+																</xs:annotation>
+
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="round" type="xs:positiveInteger" maxOccurs="unbounded" />
+																	</xs:sequence>
+
+
+																	<xs:assert test="every $i in 1 to count(round)-1 satisfies (xs:integer(round[$i]) lt xs:integer(round[$i+1]))" xerces:message="Rounds must be listed in ascending order.">
+																		<xs:annotation>
+																			<xs:documentation xml:lang="DE">
+																				Angegebene Runden sind aufsteigend sortiert.
+																			</xs:documentation>
+																		</xs:annotation>
+																	</xs:assert>
+																</xs:complexType>
+															</xs:element>
+														</xs:all>
+
+														<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+
+
+											<xs:assert test="every $i in 1 to count(player)-1 satisfies (xs:integer(player[$i]/@id) lt xs:integer(player[$i+1]/@id))" xerces:message="Players must be listed in ascending order of their IDs.">
+												<xs:annotation>
+													<xs:documentation xml:lang="DE">
+														Angegebene Spieler sind aufsteigend nach ihrer ID sortiert.
+													</xs:documentation>
+												</xs:annotation>
+											</xs:assert>
+										</xs:complexType>
+
+										<xs:unique name="_s_constraints-teams_unique-fixed-board">
+											<xs:annotation>
+												<xs:documentation xml:lang="DE">
+													Jede feste Brettnummer kann nur genau einmal vergeben werden.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="player" />
+											<xs:field xpath="fixed-board" />
+										</xs:unique>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element> -->
+
+<!-- 			<xs:element name="rankings" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="initial" minOccurs="0">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="criteria">
+										<xs:annotation>
+											<xs:documentation xml:lang="DE">
+												Kriterien zur Bildung der Startliste.
+											</xs:documentation>
+										</xs:annotation>
+
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="criterion" type="ranking-criterion" maxOccurs="unbounded">
+													<xs:alternative test="@type eq 'Rating'" type="initial-ranking-criterion-Rating" />
+													<xs:alternative test="@type eq 'Custom'" type="initial-ranking-criterion-Custom" />
+
+													<xs:alternative test="true()" type="initial-ranking-criterion" />
+												</xs:element>
+											</xs:sequence>
+
+
+											<xs:assert test="every $i in 1 to count(criterion) satisfies (criterion[$i]/@number eq $i)" xerces:message="Criteria must be serially numbered, beginning with 1">
+												<xs:annotation>
+													<xs:documentation xml:lang="DE">
+														Die Kriterien müssen über ihr @number Attribut aufsteigend
+														nummeriert sein, beginnend bei 1.
+													</xs:documentation>
+												</xs:annotation>
+											</xs:assert>
+
+											<xs:assert test="empty(criterion[@type eq 'Random']) or criterion[@type eq 'Random']/@number eq criterion[position() eq last()]/@number" xerces:message="Criterion 'Random' could only be the last one.">
+												<xs:annotation>
+													<xs:documentation xml:lang="DE">
+														"Random" kann nur das letzte Kriterium sein.
+													</xs:documentation>
+												</xs:annotation>
+											</xs:assert>
+										</xs:complexType>
+
+
+										<xs:unique name="_s_initial-ranking-criteria_unique-custom-names">
+											<xs:annotation>
+												<xs:documentation xml:lang="DE">
+													Der in criterion/name genannte Name von selbst definierten
+													Feinwertungen ist eindeutig.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name" />
+										</xs:unique>
+										<xs:unique name="_s_initial-ranking-criteria_unique-custom-abbreviation">
+											<xs:annotation>
+												<xs:documentation xml:lang="DE">
+													Die in criterion/name/@abbreviation genannte Abkürzung von 
+													selbst definierten Feinwertungen ist eindeutig.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name/@abbreviation" />
+										</xs:unique>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+
+						<xs:element name="rounds" minOccurs="0">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="criteria" type="individual-rounds-ranking-criteria">
+										<xs:annotation>
+											<xs:documentation xml:lang="DE">
+												Wertungen zur Bildung der Rangliste.
+											</xs:documentation>
+										</xs:annotation>
+
+
+										<xs:unique name="_s_rounds-ranking-criteria_unique-custom-names">
+											<xs:annotation>
+												<xs:documentation xml:lang="DE">
+													Der in criterion/name genannte Name von selbst definierten
+													Feinwertungen ist eindeutig.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name" />
+										</xs:unique>
+
+										<xs:unique name="_s_rounds-ranking-criteria_unique-custom-abbreviation">
+											<xs:annotation>
+												<xs:documentation xml:lang="DE">
+													Die in criterion/name/@abbreviation genannte Abkürzung von 
+													selbst definierten Feinwertungen ist eindeutig.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name/@abbreviation" />
+										</xs:unique>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element> -->
+		</xs:all>
+
+
+		<xs:assert test="if (count(pairings/system/colors/max-difference) gt 0) then (xs:integer(pairings/system/colors/max-difference) le xs:integer(general/rounds)) else (true())" xerces:message="The maximal color difference, specified in /tournament/settings/pairings/system/colors/max-difference, must be less or equal to the number of rounds, /tournament/settings/general/rounds.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					The maximal color difference, specified in 
+					/tournament/settings/pairings/system/colors/max-difference, 
+					must be less or equal to the number of rounds, 
+					/tournament/settings/general/rounds.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="if (count(pairings/system/colors/max-series) gt 0) then (xs:integer(pairings/system/colors/max-series) le xs:integer(general/rounds)) else (true())" xerces:message="The maximal color series, specified in /tournament/settings/pairings/system/colors/max-series, must be less or equal to the number of rounds, /tournament/settings/general/rounds.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					The maximal color series, specified in 
+					/tournament/settings/pairings/system/colors/max-series, 
+					must be less or equal to the number of rounds, 
+					/tournament/settings/general/rounds.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="every $round in pairings/system/pairing-constraints/constraint/rounds/round satisfies (xs:integer($round) le xs:integer(general/rounds))" xerces:message="Every round number listed in /tournament/settings/pairings/system/pairing-constraints/constraint/rounds/round must be less or equal to the number of rounds, /tournament/settings/general/rounds.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Every round number listed in 
+					/tournament/settings/pairings/system/pairing-constraints/constraint/rounds/round 
+					must be less or equal to the number of rounds, 
+					/tournament/settings/general/rounds.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:complexType name="rankings">
+<!-- 		<xs:annotation>
+			<xs:documentation xml:lang="DE">
+				Turnierranglisten, insbesondere auch die Startrangliste, welche
+				mindestens hinterlegt sein muss.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="initial">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">
+						Startrangliste.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="player" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="position" type="xs:positiveInteger" use="required" />
+
+								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+
+					<xs:assert test="every $i in 1 to count(player) satisfies (player[$i]/@position eq $i)" xerces:message="The positions in player/@position in rankings must be serially numbered, beginning with 1.">
+						<xs:annotation>
+							<xs:documentation xml:lang="DE">
+								Die Positionen in player/@position sind aufsteigend
+								durchnummeriert, beginnend bei 1.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+
+				<xs:unique name="unique-rankings-initial-player-position">
+					<xs:annotation>
+						<xs:documentation xml:lang="DE">
+							Die angegebenen Positionen müssen in der Startrangliste 
+							(im Gegensatz zu herkömmlichen Ranglisten) eindeutig sein.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:selector xpath="player" />
+					<xs:field xpath="@position" />
+				</xs:unique>
+
+				<xs:unique name="unique-rankings-initial-player-id">
+					<xs:annotation>
+						<xs:documentation xml:lang="DE">
+							Die angegebenen Spieler dürfen nur einmal in der Startrangliste
+							geführt werden.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:selector xpath="player" />
+					<xs:field xpath="@id" />
+				</xs:unique>
+			</xs:element>
+
+			<xs:choice minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">
+						Für jede Runde kann eine Rangliste gespeichert werden.
+						Handelt es sich um ein Rundenturnier mit mehr als einem
+						Durchgang, d.h.
+						/tournament/settings/pairings/system[@type eq 'Round-Robin']/innings > 1,
+						sind die 'inning' die Kindelemente, ansonsten 'round'.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:element name="rounds">
+					<xs:annotation>
+						<xs:documentation xml:lang="DE">
+							Tür Turniere mit nur einem Durchgang.
+							Für jede Runde kann eine Rangliste gespeichert werden.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="round" type="_s_ranking-round" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="innings">
+					<xs:annotation>
+						<xs:documentation xml:lang="DE">
+							Tür Turniere mit mehreren Durchgängen.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="inning" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="rounds">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="round" type="_s_ranking-round" maxOccurs="unbounded" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+
+									<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence> -->
+	</xs:complexType>
+</xs:schema>

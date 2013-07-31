@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Contact"
+		xmlns="http://ctx.chess.io/Contact"
+		version="1.0.0"
+		elementFormDefault="unqualified"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			Contact information.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="location">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+
+			<xs:element name="address" type="address" minOccurs="0" />
+
+			<xs:element name="phone" type="xs:string" minOccurs="0" />
+
+			<xs:element name="information" minOccurs="0">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="catering" type="xs:boolean" minOccurs="0" />
+						<xs:element name="disabled-friendly" type="xs:boolean" minOccurs="0" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="address">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="0" />
+			<xs:element name="street" type="xs:string" />
+			<xs:element name="zip" type="xs:string" minOccurs="0" />
+			<xs:element name="city" type="xs:string" />
+			<xs:element name="country" type="xs:string" minOccurs="0" />
+			<xs:element name="coordinates" type="coordinates" minOccurs="0">
+				<xs:alternative test="(@type = 'WGS84' or (count(@type) eq 0))" type="coordinates-WGS84" />
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="coordinates">
+		<xs:attribute name="type" default="WGS84">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="WGS84" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="coordinates-WGS84">
+		<xs:complexContent>
+			<xs:extension base="coordinates">
+				<xs:all>
+					<xs:element name="lon">
+						<xs:simpleType>
+							<xs:restriction base="xs:decimal">
+								<xs:minInclusive value="-180" />
+								<xs:maxInclusive value="180" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="lat">
+						<xs:simpleType>
+							<xs:restriction base="xs:decimal">
+								<xs:minInclusive value="-90" />
+								<xs:maxInclusive value="90" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+				</xs:all>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="mail">
+		<xs:simpleContent>
+			<xs:extension base="mail-entity">
+				<xs:attribute name="description" type="xs:string">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Remarks to the given mail address.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="mail-entity">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Valid mail address entity.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="phone">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="description" type="xs:string">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Remarks to the given phone number.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

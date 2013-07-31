@@ -1,0 +1,1426 @@
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Team-Tournament"
+		xmlns="http://ctx.chess.io/Team-Tournament"
+		version="1.0.0"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org"
+		xmlns:tournament="http://ctx.chess.io"
+		xmlns:person="http://ctx.chess.io/Person"
+		xmlns:club="http://ctx.chess.io/Club"
+		xmlns:contact="http://ctx.chess.io/Contact">
+
+	<xs:import namespace="http://ctx.chess.io" schemaLocation="CTX.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Person" schemaLocation="Person.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Club" schemaLocation="Club.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Contact" schemaLocation="Contact.xsd" />
+
+	<xs:include schemaLocation="Country-Code.xsd" />
+
+	<xs:complexType name="tournament">
+		<xs:complexContent>
+			<xs:extension base="tournament:tournament">
+				<xs:all>
+					<xs:element name="settings" type="settings" />
+
+					<xs:element name="teams" type="teams" minOccurs="0">
+						<xs:unique name="unique-team-name">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Team name must be unique.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:selector xpath="team" />
+							<xs:field xpath="name" />
+						</xs:unique>
+					</xs:element>
+
+					<xs:element name="pairings" type="pairings" minOccurs="0" />
+				</xs:all>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="settings">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Tournament settings.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:all>
+			<xs:element name="general">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						General settings like rounds, players per team, etc.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rounds" type="xs:positiveInteger">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Number of rounds. Obligatory.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+
+						<xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Games per round. Optional, implicitly 1.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+
+						<xs:element name="boards">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Number of boards of a match. At least 2.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="number-of-boards">
+										<xs:attribute name="colors" use="optional">
+											<xs:annotation>
+												<xs:documentation xml:lang="EN">
+													Color distribution in a single match as sequence of ("w"|"b")*.
+													Optional. If provided, the pairings are validated against this
+													color distribution. [TODO]
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:simpleType>
+												<xs:list>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:enumeration value="w" />
+															<xs:enumeration value="b" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:list>
+											</xs:simpleType>
+										</xs:attribute>
+
+
+										<xs:assert test="not(@colors) or count(tokenize(xs:string(@colors), ' ')) eq xs:integer(.)" xerces:message="The number of listed @colors must be equal to the number of boards.">
+											<xs:annotation>
+												<xs:documentation xml:lang="EN">
+													The number of listed @colors must be equal to the number of boards.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:assert>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+
+						<xs:element name="team-members" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Maximum amount of registered team members. Optional.
+									Positive integer or "unbounded".
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:simpleType>
+								<xs:union memberTypes="xs:positiveInteger str-unbounded" />
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+
+					<xs:assert test="if (count(team-members) eq 0 or xs:string(team-members) eq 'unbounded') then (true()) else (xs:integer(team-members) ge xs:integer(boards))" xerces:message="The maximal number of team-members must be greater or equal to the number of boards.">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								The maximal number of team-members must be greater or equal 
+								to the number of boards.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="points-system" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Used points-system.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="individuals" type="tournament:game-points" minOccurs="0">
+							<xs:unique name="t_unique-game-points-individuals_win">
+								<xs:selector xpath="win" />
+								<xs:field xpath="@attribute" />
+								<xs:field xpath="@color" />
+							</xs:unique>
+							<xs:unique name="t_unique-game-points-individuals_draw">
+								<xs:selector xpath="draw" />
+								<xs:field xpath="@attribute" />
+								<xs:field xpath="@color" />
+							</xs:unique>
+							<xs:unique name="t_unique-game-points-individuals_loss">
+								<xs:selector xpath="loss" />
+								<xs:field xpath="@attribute" />
+								<xs:field xpath="@color" />
+							</xs:unique>
+						</xs:element>
+
+						<xs:element name="teams" type="game-points" minOccurs="0">
+							<xs:unique name="t_unique-game-points-teams_win">
+								<xs:selector xpath="win" />
+								<xs:field xpath="@attribute" />
+							</xs:unique>
+							<xs:unique name="t_unique-game-points-teams_draw">
+								<xs:selector xpath="draw" />
+								<xs:field xpath="@attribute" />
+							</xs:unique>
+							<xs:unique name="t_unique-game-points-teams_loss">
+								<xs:selector xpath="loss" />
+								<xs:field xpath="@attribute" />
+							</xs:unique>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+
+<!-- 			<xs:element name="pairings" minOccurs="0">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="system" type="pairings-system" minOccurs="0">
+							<xs:alternative type="pairings-system_Swiss" test="@type eq 'Swiss'" />
+							<xs:alternative type="pairings-system_Round-Robin" test="@type eq 'Round-Robin'" />
+						</xs:element>
+
+						<xs:element name="constraints" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Constraints to pair the teams, e.g. fix table numbers or rounds
+									where teams miss.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="teams">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="team" maxOccurs="unbounded">
+													<xs:annotation>
+														<xs:documentation xml:lang="EN">
+															Information about a team which influence only the pairings
+															and are no static information. That's why they are not in
+															/tournament/teams/team.
+														</xs:documentation>
+													</xs:annotation>
+
+													<xs:complexType>
+														<xs:all>
+															<xs:element name="fixed-table" type="xs:positiveInteger" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation xml:lang="EN">
+																		Xixed table number.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+
+															<xs:element name="not-paired" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation xml:lang="EN">
+																		Rounds when a team misses.
+																	</xs:documentation>
+																</xs:annotation>
+
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element name="round" type="xs:positiveInteger" maxOccurs="unbounded" />
+																	</xs:sequence>
+
+
+																	<xs:assert test="every $i in 1 to count(round)-1 satisfies (xs:integer(round[$i]) lt xs:integer(round[$i+1]))" xerces:message="Rounds must be listed in ascending order.">
+																		<xs:annotation>
+																			<xs:documentation xml:lang="EN">
+																				Rounds must be listed in ascending order.
+																			</xs:documentation>
+																		</xs:annotation>
+																	</xs:assert>
+																</xs:complexType>
+															</xs:element>
+														</xs:all>
+
+														<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+
+
+											<xs:assert test="every $i in 1 to count(team)-1 satisfies (xs:integer(team[$i]/@id) lt xs:integer(team[$i+1]/@id))" xerces:message="Teams must be listed in ascending order of their IDs.">
+												<xs:annotation>
+													<xs:documentation xml:lang="EN">
+														Teams must be listed in ascending order of their IDs.
+													</xs:documentation>
+												</xs:annotation>
+											</xs:assert>
+										</xs:complexType>
+
+										<xs:unique name="_t_constraints-teams_unique-fixed-table">
+											<xs:annotation>
+												<xs:documentation xml:lang="EN">
+													Every fixed table number can be set only once.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="team" />
+											<xs:field xpath="fixed-table" />
+										</xs:unique>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element> -->
+
+<!-- 			<xs:element name="rankings" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="initial" minOccurs="0">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="criteria">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Critera to create initial ranking.
+											</xs:documentation>
+										</xs:annotation>
+
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="criterion" type="initial-ranking-criterion" maxOccurs="unbounded">
+													<xs:alternative test="@type eq 'Rating'" type="initial-ranking-criterion-Rating" />
+													<xs:alternative test="@type eq 'Custom'" type="initial-ranking-criterion-Custom" />
+
+													<xs:alternative test="true()" type="initial-ranking-criterion" />
+												</xs:element>
+											</xs:sequence>
+
+											<xs:assert test="every $i in 1 to count(criterion) satisfies (criterion[$i]/@number eq $i)" xerces:message="Criteria must be serially numbered, beginning with 1">
+												<xs:annotation>
+													<xs:documentation xml:lang="EN">
+														Criteria must be serially numbered, beginning with 1
+													</xs:documentation>
+												</xs:annotation>
+											</xs:assert>
+
+											<xs:assert test="empty(criterion[@type eq 'Random']) or criterion[@type eq 'Random']/@number eq criterion[position() eq last()]/@number" xerces:message="Criterion 'Random' could only be the last one.">
+												<xs:annotation>
+													<xs:documentation xml:lang="EN">
+														Criterion 'Random' could only be the last one.
+													</xs:documentation>
+												</xs:annotation>
+											</xs:assert>
+										</xs:complexType>
+
+
+										<xs:unique name="_t_initial-ranking-criteria_unique-custom-names">
+											<xs:annotation>
+												<xs:documentation xml:lang="DE">
+													The name specified in criterion/name is unique.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name" />
+										</xs:unique>
+										<xs:unique name="_t_intial-ranking-criteria_unique-custom-abbreviation">
+											<xs:annotation>
+												<xs:documentation xml:lang="DE">
+													The abbreviation specified in criterion/name/@abbreviation
+													is unique.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name/@abbreviation" />
+										</xs:unique>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+
+						<xs:element name="rounds" minOccurs="0">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="teams" minOccurs="0">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="criteria">
+													<xs:annotation>
+														<xs:documentation xml:lang="EN">
+															Criteria to create the team ranking.
+														</xs:documentation>
+													</xs:annotation>
+
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="criterion" type="rounds-ranking-criterion" maxOccurs="unbounded">
+																<xs:alternative test="@type eq 'Buchholz'" type="rounds-ranking-criterion_Buchholz" />
+																<xs:alternative test="@type eq 'Direct-Encounter'" type="rounds-ranking-criterion_Direct-Encounter" />
+																<xs:alternative test="@type eq 'Custom'" type="rounds-ranking-criterion_Custom" />
+
+																<xs:alternative test="true()" type="rounds-ranking-criterion" />
+															</xs:element>
+														</xs:sequence>
+
+														<xs:assert test="every $i in 1 to count(criterion) satisfies (criterion[$i]/@number eq $i)" xerces:message="Criteria must be serially numbered, beginning with 1.">
+															<xs:annotation>
+																<xs:documentation xml:lang="EN">
+																	Criteria must be serially numbered, beginning with 1.
+																</xs:documentation>
+															</xs:annotation>
+														</xs:assert>
+
+														<xs:assert test="empty(criterion[@type eq 'Random']) or criterion[@type eq 'Random']/@number eq criterion[position() eq last()]/@number" xerces:message="Criterion 'Random' could only be the last one.">
+															<xs:annotation>
+																<xs:documentation xml:lang="EN">
+																	Criterion 'Random' could only be the last one.
+																</xs:documentation>
+															</xs:annotation>
+														</xs:assert>
+													</xs:complexType>
+
+
+													<xs:unique name="_t_rounds-ranking-criteria_unique-custom-names">
+														<xs:annotation>
+															<xs:documentation xml:lang="EN">
+																The name specified in criterion(name is unique.
+															</xs:documentation>
+														</xs:annotation>
+
+														<xs:selector xpath="criterion" />
+														<xs:field xpath="name" />
+													</xs:unique>
+													<xs:unique name="_t_rounds-ranking-criteria_unique-custom-abbreviation">
+														<xs:annotation>
+															<xs:documentation xml:lang="EN">
+																The abbreviation specified in criterion/name/@abbreviation
+																is unique.
+															</xs:documentation>
+														</xs:annotation>
+
+														<xs:selector xpath="criterion" />
+														<xs:field xpath="name/@abbreviation" />
+													</xs:unique>
+												</xs:element>
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
+
+									<xs:element name="individuals" minOccurs="0">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="criteria" type="individualTnmt:rounds-ranking-criteria">
+													<xs:annotation>
+														<xs:documentation xml:lang="EN">
+															Criteria to create the player ranking.
+														</xs:documentation>
+													</xs:annotation>
+
+													<xs:unique name="_t_individual-rounds-ranking-criteria_unique-custom-names">
+														<xs:annotation>
+															<xs:documentation xml:lang="EN">
+																The name specified in criterion/name is unique.
+															</xs:documentation>
+														</xs:annotation>
+
+														<xs:selector xpath="criterion" />
+														<xs:field xpath="name" />
+													</xs:unique>
+
+													<xs:unique name="_t_individual-rounds-ranking-criteria_unique-custom-abbreviation">
+														<xs:annotation>
+															<xs:documentation xml:lang="EN">
+																The abbreviation specified in criterion/name/@abbreviation
+																is unique.
+															</xs:documentation>
+														</xs:annotation>
+
+														<xs:selector xpath="criterion" />
+														<xs:field xpath="name/@abbreviation" />
+													</xs:unique>
+												</xs:element>
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element> -->
+		</xs:all>
+	</xs:complexType>
+
+	<xs:complexType name="teams">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				List of all teams.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="team" type="team" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+
+		<xs:assert test="every $i in 1 to count(team) satisfies (team[$i]/@id eq $i)" xerces:message="Teams must be serially numbered, beginning with 1.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Teams must be serially numbered, beginning with 1.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="every $i in 1 to count(team)-1 satisfies (compare(lower-case(team[$i]/name), lower-case(team[$i+1]/name)) eq -1)" xerces:message="Teams must be sorted by their name.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Teams must be sorted by their name.
+					Attention: Sorting depends on collation, i.e. by default
+					  'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="count(team/players/player/@position) eq 0 or count(team/players/player/@position) eq count(team/players/player)" xerces:message="The @position attribute must be set for either all or no player in the team's players list.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					The @position attribute must be set for either all or no 
+					player in the team's players list.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:complexType name="team">
+		<xs:sequence>
+			<xs:element name="name">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="2" />
+					</xs:restriction>
+				</xs:simpleType>										
+			</xs:element>
+
+			<xs:element name="team-captain" type="xs:anyType" minOccurs="0">
+				<xs:alternative test="count(@player) eq 1" type="team-captain-is-player" />
+				<xs:alternative test="count(@player) eq 0" type="team-captain" />
+			</xs:element>
+
+			<xs:element name="identifiers" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								It's possible to provide either the federation of this team
+								or its club. As an alternative it's possible to choose
+								the general 'organization', for example for school teams.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:element name="federation">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="team-number" type="xs:positiveInteger" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Team number in case of multiple teams representing this
+												federation.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+
+								<xs:attribute name="code" type="Country-Code" use="required" />
+							</xs:complexType>
+						</xs:element>
+
+						<xs:element name="organization">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Representatives of an organization or the like.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="name" type="xs:string" />
+
+									<xs:element name="team-number" type="xs:positiveInteger" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Team number in case of multiple teams of the same 
+												organization.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+
+						<xs:element name="club" type="club:identifier">
+							<xs:alternative test="@federation and (@federation eq 'GER' or @federation eq 'DE')" type="club:team-identifier_GER" />
+							<xs:alternative test="true()" type="club:team-identifier" />
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="locations" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="location" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Locations of this team, e.g. its club house.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:complexType>
+								<xs:complexContent>
+									<xs:extension base="contact:location">
+										<xs:attribute name="id" use="required" type="team-location-id" />
+									</xs:extension> 
+								</xs:complexContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+
+					<xs:assert test="every $i in 1 to count(location) satisfies 
+										(ends-with(location[$i]/@id, concat('-', $i)))" xerces:message="Location IDs must be serially numbered.">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Location IDs must be serially numbered (suffixed by "-$number").
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="players">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						List of all players of this team.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="player" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+
+								<xs:attribute name="position" type="xs:positiveInteger" />
+
+								<xs:attribute name="guest" type="xs:boolean" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+
+
+					<xs:assert test="((count(player/@position) eq 0) or 
+										(every $i in 1 to count(player) satisfies (player[$i]/@position eq $i)))" xerces:message="The @position attribute must be set for either all or no players. The @position must be serially numbered if not empty.">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								The @position attribute must be set for either all 
+								or no players. The @position must be serially numbered 
+								if not empty.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+
+		<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+
+		<xs:attribute name="inactive" type="xs:boolean" default="false" use="optional" />
+
+
+		<xs:assert test="every $i in locations/location/@id satisfies starts-with($i, concat(@id, '-'))" xerces:message="The location @id must start with the team's id.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					The location @id must start with the team's ID.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:complexType name="pairings">
+		<xs:choice>
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					In general, the 'pairings'-Node contains the 'round'-nodes.
+					But if it's a round-robin tournament 
+					(i.e. /tournament/settings/pairings/system/@type = 'Round-Robin')
+					and there are more than one inning played
+					(i.e. /tournament/settings/pairings/system[@type eq 'Round-Robin']/innings gt 1)
+					at this level there are first the 'inning'-nodes.
+				</xs:documentation>
+			</xs:annotation>
+
+			<xs:sequence>
+				<xs:element name="round" type="round" maxOccurs="unbounded">
+					<xs:unique name="_t_round-unique-team">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Each team is allowed to be paired only once per round.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:selector xpath="tables/table/team" />
+						<xs:field xpath="@id" />
+					</xs:unique>
+				</xs:element>
+			</xs:sequence>
+
+			<xs:sequence>
+				<xs:element name="inning" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Inning. Contains at least an 'information' or 'boards' node.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="information" type="tournament:pairing-information_single" minOccurs="0" />
+
+							<xs:element name="notes" type="tournament:notes" minOccurs="0" />
+
+							<xs:element name="rounds" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="round" type="round" maxOccurs="unbounded">
+											<xs:unique name="_t_with-innings_round-unique-team">
+												<xs:annotation>
+													<xs:documentation xml:lang="EN">
+														Each team is allowed to be paired only once per round.
+													</xs:documentation>
+												</xs:annotation>
+
+												<xs:selector xpath="tables/table/team" />
+												<xs:field xpath="@id" />
+											</xs:unique>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+				
+						<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:choice>
+
+		<xs:assert test="every $i in 1 to count(round) satisfies (round[$i]/@number = $i)" xerces:message="Rounds must be serially numbered, beginning with 1.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Rounds must be serially numbered, beginning with 1.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+
+		<xs:assert test="every $i in 1 to count(inning) satisfies (inning[$i]/@number = $i)" xerces:message="Inning numbers must be serially numbered, beginning with 1.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Inning numbers must be serially numbered, beginning with 1.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:simpleType name="number-of-boards">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:minInclusive value="2" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="str-unbounded">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="unbounded" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="game-points">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Game points for team pairings.
+				Standard: Win=2, Draw=1, Loss=0.
+				In contrast to individual pairings the points system
+				can't depend on the colors/positions.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="win" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="2" />
+			<xs:element name="draw" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="1" />
+			<xs:element name="loss" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="0" />
+		</xs:sequence>
+
+		<xs:attribute name="win-mode" type="win-mode" use="optional" default="more than opponent" />
+	</xs:complexType>
+
+	<xs:complexType name="game-points-team-result">
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="attribute" type="tournament:result-attribute" use="optional" default="" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="win-mode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="more than 50%">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						The team that has more than 50% of the points has won.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+
+			<xs:enumeration value="more than opponent">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						The team that has more points than its opponent has won.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="team-captain-is-player">
+		<xs:attribute name="player" type="xs:positiveInteger" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="team-captain">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Team captain is none of the team's players.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexContent>
+			<xs:extension base="person:person">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Currently no additional information.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:simpleType name="team-location-id">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[1-9][0-9]*\-[1-9][0-9]*" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="round">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Single round in a Team Tournament.
+				Contains at least an 'information' or 'tables' node.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="information" minOccurs="0" type="pairing-information" />
+
+			<xs:element name="notes" type="tournament:notes" minOccurs="0" />
+
+			<xs:element name="tables" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Contains at least a 'tables' node.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="table" type="table_abstract" minOccurs="1" maxOccurs="unbounded">
+							<xs:alternative test="@attribute eq 'bye'" type="table_bye" />
+							<xs:alternative test="true()" type="table" />
+						</xs:element>
+					</xs:sequence>
+
+					<xs:assert test="every $i in (table/team/@id) satisfies 
+										(count(table/team[@id = $i]) le 1)" xerces:message="Every team can be paired only once per round.">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Every team can be paired only once per round.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:assert>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+
+		<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="pairing-information">
+		<xs:complexContent>
+			<xs:extension base="tournament:pairing-information">
+				<xs:sequence>
+					<xs:choice minOccurs="0">
+						<xs:element name="location" type="contact:location" />
+
+						<xs:element name="host">
+							<xs:complexType>
+								<xs:attribute name="team" type="xs:integer" use="required" />
+
+								<xs:attribute name="location" type="team-location-id" use="required" />
+
+								<xs:assert test="substring-before(@location, '-') eq xs:string(@team)" xerces:message="Location must start with the team id.">
+									<xs:annotation>
+										<xs:documentation xml:lang="EN">
+											Location must start with the team id.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:assert>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+
+					<xs:element name="arbiters" type="xs:anyType" minOccurs="0">
+						<xs:alternative test="@type and @type eq 'string'" type="person:arbiters-string">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Legacy data type for compatibility only.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:alternative>
+
+						<xs:alternative test="true()" type="person:arbiters-references" />
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="table_abstract" abstract="true">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Superclass for table_bye and table.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:attribute name="attribute" type="table-attribute" use="optional" default="" />
+		<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="table_bye">
+		<xs:complexContent>
+			<xs:extension base="table_abstract">
+				<xs:sequence>
+					<xs:element name="team">
+						<xs:complexType>
+							<xs:attribute name="id" type="xs:positiveInteger" />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="table">
+		<xs:complexContent>
+			<xs:extension base="table_abstract">
+				<xs:sequence>
+					<xs:sequence>
+						<xs:element name="team" minOccurs="1" maxOccurs="2">
+							<xs:complexType>
+								<xs:attribute name="id" use="required" type="xs:positiveInteger" />
+
+								<xs:attribute name="position" use="required">
+									<xs:simpleType>
+										<xs:restriction base="xs:positiveInteger">
+											<xs:enumeration value="1" />
+											<xs:enumeration value="2" />
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+
+					<xs:choice minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Either a list of all individual pairings by the 'boards' node
+								or the number of results in the 'results' node.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:element name="results" maxOccurs="2">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									List of all individual results.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="team" minOccurs="2" maxOccurs="2">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="wins" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+												<xs:element name="draws" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+												<xs:element name="losses" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+											</xs:sequence>
+
+											<xs:attribute name="position" use="required">
+												<xs:simpleType>
+													<xs:restriction base="xs:positiveInteger">
+														<xs:enumeration value="1" />
+														<xs:enumeration value="2" />
+													</xs:restriction>
+												</xs:simpleType>
+											</xs:attribute>
+										</xs:complexType>
+
+
+										<xs:unique name="unique-result-entry_wins">
+											<xs:selector xpath="wins" />
+											<xs:field xpath="@attribute" />
+										</xs:unique>
+										<xs:unique name="unique-result-entry_draws">
+											<xs:selector xpath="draws" />
+											<xs:field xpath="@attribute" />
+										</xs:unique>
+										<xs:unique name="unique-result-entry_losses">
+											<xs:selector xpath="losses" />
+											<xs:field xpath="@attribute" />
+										</xs:unique>
+									</xs:element>
+								</xs:sequence>
+
+								<xs:attribute name="overruled" type="xs:boolean" use="optional" default="false">
+									<xs:annotation>
+										<xs:documentation xml:lang="EN">
+											Not longer valid result after being oberruled by a tournament
+											instance, e.g. the arbiter, court of arbitration, etc.
+											In this case the real played result has to be flagged by this
+											attribute.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+
+						<xs:element name="boards">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									Individual pairings of the team players.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="board" type="tournament:board_abstract" maxOccurs="unbounded">
+										<xs:alternative test="@attribute eq 'bye'" type="tournament:board_bye" />
+										<xs:alternative test="true()" type="board" />
+									</xs:element>
+								</xs:sequence>
+
+								<xs:assert test="every $i in 1 to count(board) satisfies (board[$i]/@number = $i)" xerces:message="Board numbers must be serially numbered, beginning with 1.">
+									<xs:annotation>
+										<xs:documentation xml:lang="EN">
+											Board numbers must be serially numbered, beginning with 1.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:assert>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+
+					<xs:element name="information" minOccurs="0" type="pairing-information">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Additional information about the pairing of these two teams.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+
+
+				<xs:attribute name="swapped" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Flag whether the pairing has been started with swapped colors.
+							The original pairing is ever saved, so the @swapped='true' provides
+							a way to mark those pairings played with swapped colors.
+							It is not necessary to mark the individual pairings also with a 
+							@swapped='true' attribute. This means if a complete match has been
+							swapped, only the team pairing gets the @swapped='true' attribute.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+				<xs:assert test="if (count(results) ge 1) then (count(results[not(xs:boolean(@overruled))]) eq 1) else true()" xerces:message="There must be exactly one result with @overrule='false'.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							There must be exactly one result with @overrule='false'.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+
+				<xs:assert test="every $team in (boards/board/white/@team | boards/board/black/@team | boards/board/player/@team) satisfies (
+											count(team[@id eq $team]) eq 1
+										)" xerces:message="The players listed in the single-player-pairings must be of one of the competing teams.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							The players listed in the single-player-pairings must be of one of the competing teams.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+
+				<xs:assert test="every $id in (boards/board/white/@player | boards/board/black/@player) satisfies (
+											count(boards/board/white[@player = $id] | boards/board/black[@player = $id]) eq 1
+										)" xerces:message="Every player can be listed only once per table.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Every player can be listed only once per table.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:simpleType name="table-attribute">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="" />
+
+			<xs:enumeration value="bye">
+				<xs:annotation>
+					<xs:documentation xml:lang="DE">
+						Spielfrei, Freilos.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="single-result-summarization">
+		<xs:simpleContent>
+			<xs:extension base="xs:nonNegativeInteger">
+				<xs:attribute name="attribute" type="tournament:result-attribute" use="optional" default="" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="board">
+		<xs:complexContent>
+			<xs:extension base="tournament:board_abstract">
+				<xs:choice>
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Single game information by providing both players and their
+								results.
+								This format is used for every Tournament, where only a single
+								game is played per round.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:element name="white" type="board-single-player" />
+
+						<xs:element name="black" type="board-single-player" />
+
+						<xs:element name="result" type="tournament:result-single" minOccurs="0" maxOccurs="2">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									The game result can be saved upto two times:
+										* no 'result' node:
+											There is no result known, probably not yet played.
+										* single 'result' node:
+											Game played and result set.
+										* two 'result' nodes:
+											Original played result has been overruled by a tournament
+											instance like the arbiter. Exactly one 'result' element
+											has the @attribute='overruled' set.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Specification of opponents and their results for Tournaments
+								where more than one game is played per round.
+								There's no way to set a @swapped='true' attribute for the whole
+								pairing, instead every single game has to be marked as @swapped.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:element name="player" minOccurs="2" maxOccurs="2">
+							<xs:complexType>
+								<xs:attribute name="team" type="xs:positiveInteger" use="required">
+									<xs:annotation>
+										<xs:documentation xml:lang="EN">
+											Team-ID of the player.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+
+								<xs:attribute name="position" use="required">
+									<xs:annotation>
+										<xs:documentation xml:lang="EN">
+											Specification of being named first or second.
+										</xs:documentation>
+									</xs:annotation>
+
+									<xs:simpleType>
+										<xs:restriction base="xs:positiveInteger">
+											<xs:enumeration value="1" />
+											<xs:enumeration value="2" />
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+
+								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+							</xs:complexType>
+						</xs:element>
+
+						<xs:choice>
+							<xs:element name="games">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										List of all single games.
+									</xs:documentation>
+								</xs:annotation>
+
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="game" minOccurs="2" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="white" type="board-single-player" />
+
+													<xs:element name="black" type="board-single-player" />
+
+													<xs:element name="result" type="tournament:result-single" minOccurs="0" maxOccurs="2" />
+												</xs:sequence>
+
+												<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+
+												<xs:attribute name="swapped" type="xs:boolean" use="optional" default="false">
+													<xs:annotation>
+														<xs:documentation xml:lang="EN">
+															Flag whether the game has been played with swapped colors. The original
+															pairing is always saved, so the @swapped='true' attribute is the only
+															way to mark changed colors.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+
+											<xs:unique name="_t_multiple-games_game_unique-opponent">
+												<xs:annotation>
+													<xs:documentation xml:lang="EN">
+														The white and black player must have different player-ID's
+														in their @player attribute.
+													</xs:documentation>
+												</xs:annotation>
+
+												<xs:selector xpath="white | black" />
+												<xs:field xpath="@player" />
+											</xs:unique>
+										</xs:element>
+									</xs:sequence>
+
+									<xs:assert test="every $i in 1 to count(game) satisfies (game[$i]/@number eq $i)" xerces:message="The games must be serially numbered by their @number attribute, beginning with 1.">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												The games must be serially numbered by their @number attribute, beginning with 1.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:assert>
+								</xs:complexType>
+							</xs:element>
+
+							<xs:element name="results">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										List of the results of all (yet finished) single games.
+									</xs:documentation>
+								</xs:annotation>
+
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="player" minOccurs="2" maxOccurs="2">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="wins" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+													<xs:element name="draws" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+													<xs:element name="losses" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+												</xs:sequence>
+
+												<xs:attribute name="position" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:positiveInteger">
+															<xs:enumeration value="1" />
+															<xs:enumeration value="2" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+											</xs:complexType>
+
+
+											<xs:unique name="_t_unique-result-entry_wins">
+												<xs:selector xpath="wins" />
+												<xs:field xpath="@attribute" />
+											</xs:unique>
+											<xs:unique name="_t_unique-result-entry_draws">
+												<xs:selector xpath="draws" />
+												<xs:field xpath="@attribute" />
+											</xs:unique>
+											<xs:unique name="_t_unique-result-entry_losses">
+												<xs:selector xpath="losses" />
+												<xs:field xpath="@attribute" />
+											</xs:unique>
+										</xs:element>
+									</xs:sequence>
+
+
+									<xs:attribute name="overruled" type="xs:boolean" use="optional" default="false">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Result which has been overruled by a tournament instance like
+												the arbiter. In this case the originally played result has been
+												marked with this @overruled attribute.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+
+
+									<xs:assert test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" xerces:message="The players @position must be serially numbered, beginning with 1.">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												The players @position must be serially numbered, beginning with 1.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:assert>
+
+									<xs:assert test="sum(player[1]/*) eq sum(player[2]/*)" xerces:message="The number of saved results of both players must be equal.">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												The number of saved results of both players must be equal.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:assert>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:sequence>
+				</xs:choice>
+
+
+				<xs:attribute name="swapped" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Flag whether the game has been played with swapped colors.
+							The original pairing is always saved, so the @swapped='true'
+							attribute is the only way to mark those results.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+
+				<xs:assert test="if (count(result) ge 1) then (count(result[not(xs:boolean(@overruled))]) eq 1) else true()" xerces:message="If multiple results are given, only one should have the @overruled='false' set.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							If multiple results are given, only one should have the @overruled='false' set.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+
+				<xs:assert test="white/@team ne black/@team and player[1]/@team ne player[2]/@team" xerces:message="Players must be of different teams.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Players must be of different teams.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+
+				<xs:assert test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" xerces:message="The player/@position must be serially numbered, beginning with 1.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							The player/@position must be serially numbered, beginning with 1.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+
+				<xs:assert test="xs:string(@swapped) eq 'false' or count(games) eq 0" xerces:message="The @swapped attribute of boards must not be set to 'true' in tournaments with multiple games per round. Please mark instead every single game as @swapped.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							The @swapped attribute of boards must not be set to 'true' in 
+							tournaments with multiple games per round. Please mark instead 
+							every single game as @swapped.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+
+				<xs:assert test="every $id in (games/game/(white | black)/@player) satisfies ($id eq player[1]/@id or $id eq player[2]/@id)" xerces:message="The players referenced in each game must be the same as for this board.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							The players referenced in each game must be the same as for 
+							this board.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+
+				<xs:assert test="if (count(results) ge 1) then (count(results[not(xs:boolean(@overruled))]) eq 1) else true()" xerces:message="There must be exactly one result with @overrule='false'.">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							There must be exactly one result with @overrule='false'.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:assert>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="board-single-player">
+		<xs:complexContent>
+			<xs:extension base="tournament:board-single-player">
+				<xs:attribute name="team" type="xs:positiveInteger" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Team the player belongs to.
+							Necessary as (substitute) players may belong to multiple
+							teams.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+				<xs:attribute name="seeded-too-low" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Flag that the played has been seeded too low, i.e. there played
+							another team mate with a higher @position attribute on a board
+							with a smaller @number.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

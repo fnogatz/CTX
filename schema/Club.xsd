@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Club"
+		xmlns="http://ctx.chess.io/Club"
+		version="1.0.0"
+		elementFormDefault="unqualified"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org">
+
+	<xs:annotation>
+		<xs:documentation xml:lang="EN">
+			Club information.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:include schemaLocation="Country-Code.xsd" />
+
+	<xs:complexType name="identifier">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+		</xs:sequence>
+
+		<xs:attribute name="federation" type="Country-Code" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Country of the club. Obligatory if club/id specified.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:assert test="@federation or not(id)" xerces:message="Attribute @federation must be set for clubs with given club/id.">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Attribute @federation must be set for clubs with given club/id.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:assert>
+	</xs:complexType>
+
+	<xs:complexType name="team-identifier_abstract" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="identifier">
+				<xs:sequence>
+					<xs:element name="team-number" type="xs:positiveInteger" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Team number in case of multiple teams of the same club.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="team-identifier">
+		<xs:complexContent>
+			<xs:extension base="team-identifier_abstract">
+				<xs:sequence>
+					<xs:element name="id" type="xs:string" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="team-identifier_GER">
+		<xs:complexContent>
+			<xs:extension base="team-identifier_abstract">
+				<xs:sequence>
+					<xs:element name="id" type="id_GER" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="person-identifier">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Adds person-specific club information like member-id to club:identifier.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexContent>
+			<xs:extension base="identifier">
+				<xs:sequence>
+					<xs:sequence minOccurs="0">
+						<xs:element name="id">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+
+						<xs:element name="member-id" minOccurs="0">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:minLength value="1" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="person-identifier_GER">
+		<xs:complexContent>
+			<xs:extension base="person-identifier">
+				<xs:sequence>
+					<xs:sequence minOccurs="0">
+						<xs:element name="id" type="id_GER" />
+						<xs:element name="member-id" type="member-id_GER" minOccurs="0" />
+					</xs:sequence>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:simpleType name="id_GER">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9A-IK][0-9A-F]{2}[0-9]{2}" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="member-id_GER">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:maxExclusive value="10000" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
