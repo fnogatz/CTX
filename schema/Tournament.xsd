@@ -325,23 +325,17 @@
 			</xs:simpleType>
 		</xs:attribute>
 
-		<xs:assert test="every $p in players/player/birth-year satisfies (xs:int($p) le xs:int(year-from-date(information/date/start)))" xerces:message="Every player's birth year must be before the tournament's starting date.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Every player's birth year must be before the tournament's starting date.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $p in players/player/birth-year satisfies (xs:int($p) le xs:int(year-from-date(information/date/start)))" 
+			xerces:message="Every player's birth year must be before the tournament's starting date." />
 
-		<xs:assert test="every $p in players/player/birth satisfies ($p lt information/date/start)" xerces:message="Every player's birth must be before the tournament's starting date.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Every player's birth must be before the tournament's starting date.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $p in players/player/birth satisfies ($p lt information/date/start)" 
+			xerces:message="Every player's birth must be before the tournament's starting date." />
 
-		<xs:assert test="every $date in pairings//information/date satisfies ($date le information/date/end)" xerces:message="Round date must be before tournament's ending date.">
+		<xs:assert 
+			test="every $date in pairings//information/date satisfies ($date le information/date/end)" 
+			xerces:message="Round date must be before tournament's ending date.">
 			<xs:annotation>
 				<xs:documentation xml:lang="EN">
 					Round date must be before tournament's ending date.
@@ -352,7 +346,9 @@
 			</xs:annotation>
 		</xs:assert>
 
-		<xs:assert test="every $date in pairings//information/date satisfies ($date ge information/date/start)" xerces:message="Round date must be after tournament's starting date.">
+		<xs:assert 
+			test="every $date in pairings//information/date satisfies ($date ge information/date/start)" 
+			xerces:message="Round date must be after tournament's starting date.">
 			<xs:annotation>
 				<xs:documentation xml:lang="EN">
 					Round date must be after tournament's starting date.
@@ -363,7 +359,8 @@
 			</xs:annotation>
 		</xs:assert>
 
-		<xs:assert test="if (
+		<xs:assert 
+			test="if (
 											(count(settings/pairings/system[@type eq 'Round-Robin']) eq 0) or 
 											(count(settings/pairings/system[@type eq 'Round-Robin']/innings) eq 0) or
 											(xs:integer(settings/pairings/system[@type eq 'Round-Robin']/innings) eq 1)
@@ -371,19 +368,11 @@
 											count(pairings/inning) eq 0
 										) else (
 											count(pairings/round) eq 0
-										)" xerces:message="If it is a Round-Robin Tournament, i.e. /tournament/settings/system/@type = 'Round-Robin', and more than one inning is played, i.e. /tournament/settings/system/innings > 1, the child-nodes of /tournament/pairings must be 'inning'. Otherwise /tournament/pairings has to include 'round' elements.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					If it is a Round-Robin Tournament, i.e. 
-					/tournament/settings/system/@type = 'Round-Robin', and more than one 
-					inning is played, i.e. /tournament/settings/system/innings > 1, the 
-					child-nodes of /tournament/pairings must be 'inning'. Otherwise 
-					/tournament/pairings has to include 'round' elements.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+										)" 
+			xerces:message="If it is a Round-Robin Tournament, i.e. /tournament/settings/system/@type = 'Round-Robin', and more than one inning is played, i.e. /tournament/settings/system/innings > 1, the child-nodes of /tournament/pairings must be 'inning'. Otherwise /tournament/pairings has to include 'round' elements." />
 
-		<xs:assert test="if (
+		<xs:assert 
+			test="if (
 											(count(settings/pairings/system[@type eq 'Round-Robin']) eq 0) or 
 											(count(settings/pairings/system[@type eq 'Round-Robin']/innings) eq 0) or
 											(xs:integer(settings/pairings/system[@type eq 'Round-Robin']/innings) eq 1)
@@ -391,20 +380,11 @@
 											count(rankings/innings) eq 0
 										) else (
 											count(rankings/rounds) eq 0
-										)" xerces:message="If it is a Round-Robin Tournament, i.e. /tournament/settings/system/@type = 'Round-Robin', and more than one inning is played, i.e. /tournament/settings/system/innings > 1, there must not be an /tournament/rankings/innings element instead of /tournament/rankings/rounds. Tournaments with only one inning must not have any 'innings' element within /tournament/rankings.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					If it is a Round-Robin Tournament, i.e. 
-					/tournament/settings/system/@type = 'Round-Robin', and more than one 
-					inning is played, i.e. /tournament/settings/system/innings > 1, there 
-					must not be an /tournament/rankings/innings element instead of 
-					/tournament/rankings/rounds. Tournaments with only one inning must 
-					not have any 'innings' element within /tournament/rankings.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+										)" 
+			xerces:message="If it is a Round-Robin Tournament, i.e. /tournament/settings/system/@type = 'Round-Robin', and more than one inning is played, i.e. /tournament/settings/system/innings > 1, there must not be an /tournament/rankings/innings element instead of /tournament/rankings/rounds. Tournaments with only one inning must not have any 'innings' element within /tournament/rankings." />
 
-		<xs:assert test="if (
+		<xs:assert 
+			test="if (
 											(count(settings/pairings/system[@type eq 'Round-Robin']) eq 0) or 
 											(count(settings/pairings/system[@type eq 'Round-Robin']/innings) eq 0) or
 											(xs:integer(settings/pairings/system[@type eq 'Round-Robin']/innings) eq 1)
@@ -412,186 +392,99 @@
 											true()
 										) else (
 											every $inningno in rankings/innings/inning/@number satisfies ($inningno le settings/pairings/system[@type eq 'Round-Robin']/innings)
-										)" xerces:message="If it is a Round-Robin Tournament, i.e. /tournament/settings/system/@type = 'Round-Robin', and more than one inning is played, i.e. /tournament/settings/system/innings > 1, the inning/@number in /tournament/rankings/inning must be less or equal to the specified number of innings in /tournament/settings/pairings/system/innings.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					If it is a Round-Robin Tournament, i.e. 
-					/tournament/settings/system/@type = 'Round-Robin', 
-					and more than one inning is played, i.e. 
-					/tournament/settings/system/innings > 1, the inning/@number in 
-					/tournament/rankings/inning must be less or equal to the specified 
-					number of innings in /tournament/settings/pairings/system/innings.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+										)" 
+			xerces:message="If it is a Round-Robin Tournament, i.e. /tournament/settings/system/@type = 'Round-Robin', and more than one inning is played, i.e. /tournament/settings/system/innings > 1, the inning/@number in /tournament/rankings/inning must be less or equal to the specified number of innings in /tournament/settings/pairings/system/innings." />
 
-		<xs:assert test="(count(settings/general/games-per-round) eq 0) or (settings/general/games-per-round eq 1) or count(pairings//board/(white | black)) eq 0" xerces:message="If multiple games are played per round, i.e. /tournament/settings/general/games-per-round is set and greater than 1, the competing players of each board must be referenced through the 'player' element and not by 'white' and 'black'.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					If multiple games are played per round, i.e. 
-					/tournament/settings/general/games-per-round is set and greater 
-					than 1, the competing players of each board must be referenced 
-					through the 'player' element and not by 'white' and 'black'.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="(count(settings/general/games-per-round) eq 0) or (settings/general/games-per-round eq 1) or count(pairings//board/(white | black)) eq 0" 
+			xerces:message="If multiple games are played per round, i.e. /tournament/settings/general/games-per-round is set and greater than 1, the competing players of each board must be referenced through the 'player' element and not by 'white' and 'black'." />
 
-		<xs:assert test="if (
+		<xs:assert 
+			test="if (
 											(count(settings/general/games-per-round) eq 0) or
 											(settings/general/games-per-round eq 1)
 										) then (
 											count(pairings//board/games/game) eq 0
 										) else (
 											true()
-										)" xerces:message="If only one game is played per round, i.e. /tournament/settings/general/games-per-round is either not set or equal to 1, no 'games' element is allowed within a 'board' element in /tournament/pairings/(...).">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					If only one game is played per round, i.e. 
-					/tournament/settings/general/games-per-round is either not set or 
-					equal to 1, no 'games' element is allowed within a 'board' element 
-					in /tournament/pairings/(...).
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+										)" 
+			xerces:message="If only one game is played per round, i.e. /tournament/settings/general/games-per-round is either not set or equal to 1, no 'games' element is allowed within a 'board' element in /tournament/pairings/(...)." />
 
-		<xs:assert test="if (
-											(count(settings/general/games-per-round) eq 0) or
-											(settings/general/games-per-round eq 1)
-										) then (
-											true()
-										) else (
-											every $games in pairings//board/games satisfies (
-												count($games/game) eq xs:integer(settings/general/games-per-round)
-											)
-										)" xerces:message="If multiple games are played per round, i.e. /tournament/settings/general/games-per-round > 1, the number of 'game' elements in /tournament/pairings/(...)/board/games must be equal to this one specified in /tournament/settings/general/games-per-round.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					If multiple games are played per round, i.e. 
-					/tournament/settings/general/games-per-round > 1, the number of 
-					'game' elements in /tournament/pairings/(...)/board/games must be equal 
-					to this one specified in /tournament/settings/general/games-per-round.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="if (
+						(count(settings/general/games-per-round) eq 0) or
+						(settings/general/games-per-round eq 1)
+					) then (
+						true()
+					) else (
+						every $games in pairings//board/games satisfies (
+							count($games/game) eq xs:integer(settings/general/games-per-round)
+						)
+					)" 
+			xerces:message="If multiple games are played per round, i.e. /tournament/settings/general/games-per-round > 1, the number of 'game' elements in /tournament/pairings/(...)/board/games must be equal to this one specified in /tournament/settings/general/games-per-round." />
 
-		<xs:assert test="if (
-											(count(settings/general/games-per-round) eq 0) or
-											(settings/general/games-per-round eq 1)
-										) then (
-											true()
-										) else (
-											every $results in pairings//board/results/player satisfies (
-												sum($results/*) le settings/general/games-per-round
-											)
-										)" xerces:message="If more than one game is played per round, i.e. /tournament/settings/general/games-per-round > 1, the number of results in /tournament/pairings/(...)/board/results/player must be less or equal to the number of games specified in /tournament/settings/general/games-per-round.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					If more than one game is played per round, i.e. 
-					/tournament/settings/general/games-per-round > 1, the number of 
-					results in /tournament/pairings/(...)/board/results/player must 
-					be less or equal to the number of games specified in 
-					/tournament/settings/general/games-per-round.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="if (
+						(count(settings/general/games-per-round) eq 0) or
+						(settings/general/games-per-round eq 1)
+					) then (
+						true()
+					) else (
+						every $results in pairings//board/results/player satisfies (
+							sum($results/*) le settings/general/games-per-round
+						)
+					)" 
+			xerces:message="If more than one game is played per round, i.e. /tournament/settings/general/games-per-round > 1, the number of results in /tournament/pairings/(...)/board/results/player must be less or equal to the number of games specified in /tournament/settings/general/games-per-round." />
 
-		<xs:assert test="every $roundno in pairings//round/@number satisfies ($roundno le settings/general/rounds)" xerces:message="Every round number in /tournament/pairings//round/@number must be less or equal to the specified one in /tournament/settings/general/rounds.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Every round number in /tournament/pairings//round/@number must 
-					be less or equal to the specified one in 
-					/tournament/settings/general/rounds.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $roundno in pairings//round/@number satisfies ($roundno le settings/general/rounds)" 
+			xerces:message="Every round number in /tournament/pairings//round/@number must be less or equal to the specified one in /tournament/settings/general/rounds." />
 
-		<xs:assert test="every $roundno in rankings//rounds/round/@number satisfies ($roundno le settings/general/rounds)" xerces:message="Every round number in /tournament/rankings//round/@number must be less or equal to the specified one in /tournament/settings/general/rounds.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Every round number in /tournament/rankings//round/@number must 
-					be less or equal to the specified one in 
-					/tournament/settings/general/rounds.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $roundno in rankings//rounds/round/@number satisfies ($roundno le settings/general/rounds)" 
+			xerces:message="Every round number in /tournament/rankings//round/@number must be less or equal to the specified one in /tournament/settings/general/rounds." />
 
-		<xs:assert test="if (count(pairings/inning) gt 0) then (
-											every $round in pairings/inning/rounds/round[boards or tables]/@number satisfies (
-												count(pairings/inning/rounds/round[@number eq $round][boards or tables]) eq settings/pairings/system[@type eq 'Round-Robin']/innings
-											)
-										) else (true())" xerces:message="The pairings of an already paired round must be specified in every inning.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					The pairings of an already paired round must be specified 
-					in every inning.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="if (count(pairings/inning) gt 0) then (
+					every $round in pairings/inning/rounds/round[boards or tables]/@number satisfies (
+						count(pairings/inning/rounds/round[@number eq $round][boards or tables]) eq settings/pairings/system[@type eq 'Round-Robin']/innings
+					)
+				) else (true())" 
+			xerces:message="The pairings of an already paired round must be specified in every inning." />
 
-		<xs:assert test="(every $roundno in rankings/rounds/round/@number satisfies (
-											count(pairings/round[@number eq $roundno][boards or tables]) gt 0
-										)) and
-											(every $inningno in rankings/innings/inning/@number satisfies (
-												every $roundno in rankings/innings/inning[@number eq $inningno]/rounds/round/@number satisfies (
-													count(pairings/inning[@number eq $inningno]/rounds/round[@number eq $roundno][boards or tables]) gt 0
-												)
-											))
-										" xerces:message="There must not be any ranking for rounds, which aren't paired yet.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					There must not be any ranking for rounds, which aren't paired yet.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="(every $roundno in rankings/rounds/round/@number satisfies (
+						count(pairings/round[@number eq $roundno][boards or tables]) gt 0
+					)) and
+						(every $inningno in rankings/innings/inning/@number satisfies (
+							every $roundno in rankings/innings/inning[@number eq $inningno]/rounds/round/@number satisfies (
+								count(pairings/inning[@number eq $inningno]/rounds/round[@number eq $roundno][boards or tables]) gt 0
+							)
+						))"
+			xerces:message="There must not be any ranking for rounds, which aren't paired yet." />
 
-		<xs:assert test="every 
-												$federation in distinct-values(data((players/player | teams/team)/identifiers/club/@federation)), 
-												$id in distinct-values(data((players/player | teams/team)/identifiers/club[@federation eq $federation]/id))
-											satisfies (
-												count(distinct-values(data((players/player | teams/team)/identifiers/club[@federation eq $federation and xs:string(id) eq xs:string($id)]/name))) eq 1
-											)" xerces:message="Clubs of the same club/@federation with the identical club/id must also have the same club/name.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Clubs of the same club/@federation with the identical 
-					club/id must also have the same club/name.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every 
+						$federation in distinct-values(data((players/player | teams/team)/identifiers/club/@federation)), 
+						$id in distinct-values(data((players/player | teams/team)/identifiers/club[@federation eq $federation]/id))
+					satisfies (
+						count(distinct-values(data((players/player | teams/team)/identifiers/club[@federation eq $federation and xs:string(id) eq xs:string($id)]/name))) eq 1
+					)"
+			xerces:message="Clubs of the same club/@federation with the identical club/id must also have the same club/name." />
 
-		<xs:assert test="every $club_name in distinct-values(data((players/player | teams/team)/identifiers/club/name)) satisfies (
-											count(distinct-values(data((players/player | teams/team)/identifiers/club[xs:string(name) eq xs:string($club_name)]/@federation))) le 1
-										)" xerces:message="Clubs with the same club/name must also have the identical club/@federation if set. Keep in mind that the Club-Name is an distinct key. If you have clubs of different federations with the same name, you have to suffix them.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Clubs with the same club/name must also have the identical 
-					club/@federation if set. Keep in mind that the Club-Name is an 
-					distinct key. If you have clubs of different federations with 
-					the same name, you have to suffix them.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $club_name in distinct-values(data((players/player | teams/team)/identifiers/club/name)) satisfies (
+						count(distinct-values(data((players/player | teams/team)/identifiers/club[xs:string(name) eq xs:string($club_name)]/@federation))) le 1
+					)" 
+			xerces:message="Clubs with the same club/name must also have the identical club/@federation if set. Keep in mind that the Club-Name is an distinct key. If you have clubs of different federations with the same name, you have to suffix them." />
 
 		<xs:assert test="every $club_name in distinct-values(data((players/player | teams/team)/identifiers/club/name)) satisfies (
 											count(distinct-values(data((players/player | teams/team)/identifiers/club[xs:string(name) eq xs:string($club_name)]/id))) le 1
-										)" xerces:message="Clubs with the same club/name must also have the identical club/id if set. Keep in mind that the Club-Name is an distinct key. If you have clubs with different IDs but the same name, you have to suffix them.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Clubs with the same club/name must also have the identical 
-					club/id if set. Keep in mind that the Club-Name is an distinct 
-					key. If you have clubs with different IDs but the same name, 
-					you have to suffix them.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+										)" xerces:message="Clubs with the same club/name must also have the identical club/id if set. Keep in mind that the Club-Name is an distinct key. If you have clubs with different IDs but the same name, you have to suffix them." />
 
-		<xs:assert test="count((//@federation | //federation/@code)[string-length(xs:string(.)) eq 2]) eq 0 or count((//@federation | //federation/@code)[string-length(xs:string(.)) eq 3]) eq 0" xerces:message="You have to use either IOC or ISO3166 Country Codes in the complete XML file. Please do not mix both types.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					You have to use either IOC or ISO3166 Country Codes in the 
-					complete XML file. Please do not mix both types.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert
+			test="count((//@federation | //federation/@code)[string-length(xs:string(.)) eq 2]) eq 0 or count((//@federation | //federation/@code)[string-length(xs:string(.)) eq 3]) eq 0" 
+			xerces:message="You have to use either IOC or ISO3166 Country Codes in the complete XML file. Please do not mix both types." />
 	</xs:complexType>
 
 	<xs:complexType name="information">
@@ -615,13 +508,9 @@
 						<xs:element name="end" type="xs:date" />
 					</xs:sequence>
 
-					<xs:assert test="start le end" xerces:message="Start date must be before end date">
-						<xs:annotation>
-							<xs:documentation xml:lang="EN">
-								Check if start date is less or equal to its end.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:assert>
+					<xs:assert 
+						test="start le end" 
+						xerces:message="Start date must be before end date" />
 				</xs:complexType>
 			</xs:element>
 
@@ -688,51 +577,40 @@
 			<xs:element name="player" type="person:player" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 
-		<xs:assert test="
-			every $i in 1 to count(player)-1 satisfies (
-				if (player[$i]/name/@type eq 'string') then (
-					if (player[$i+1]/name/@type eq 'string') then (
-						compare(
-							lower-case(player[$i]/name),
-							lower-case(player[$i+1]/name)
-						) le 0
+		<xs:assert 
+			test="
+				every $i in 1 to count(player)-1 satisfies (
+					if (player[$i]/name/@type eq 'string') then (
+						if (player[$i+1]/name/@type eq 'string') then (
+							compare(
+								lower-case(player[$i]/name),
+								lower-case(player[$i+1]/name)
+							) le 0
+						) else (
+							compare(
+								lower-case(player[$i]/name),
+								lower-case(concat(player[$i+1]/name/surname, ',', player[$i+1]/name/prename, ',', player[$i+1]/name/academic-title))
+							) le 0
+						)
 					) else (
-						compare(
-							lower-case(player[$i]/name),
-							lower-case(concat(player[$i+1]/name/surname, ',', player[$i+1]/name/prename, ',', player[$i+1]/name/academic-title))
-						) le 0
+						if (player[$i+1]/name/@type eq 'string') then (
+							compare(
+								lower-case(concat(player[$i]/name/surname, ',', player[$i]/name/prename, ',', player[$i]/name/academic-title)),
+								lower-case(player[$i+1]/name)
+							) le 0
+						) else (
+							compare(
+								lower-case(concat(player[$i]/name/surname, ',', player[$i]/name/prename, ',', player[$i]/name/academic-title)),
+								lower-case(concat(player[$i+1]/name/surname, ',', player[$i+1]/name/prename, ',', player[$i+1]/name/academic-title))
+							) le 0
+						)
 					)
-				) else (
-					if (player[$i+1]/name/@type eq 'string') then (
-						compare(
-							lower-case(concat(player[$i]/name/surname, ',', player[$i]/name/prename, ',', player[$i]/name/academic-title)),
-							lower-case(player[$i+1]/name)
-						) le 0
-					) else (
-						compare(
-							lower-case(concat(player[$i]/name/surname, ',', player[$i]/name/prename, ',', player[$i]/name/academic-title)),
-							lower-case(concat(player[$i+1]/name/surname, ',', player[$i+1]/name/prename, ',', player[$i+1]/name/academic-title))
-						) le 0
-					)
-				)
-			)
-		" xerces:message="Players must be sorted by their name.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Players must be sorted by their name.
-					Attention: Sorting depends on collation, i.e. by default
-					  'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+				)" 
+				xerces:message="Players must be sorted by their name. Attention: Sorting depends on collation, i.e. by default 'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'." />
 
-		<xs:assert test="every $i in 1 to count(player) satisfies (player[$i]/@id eq $i)" xerces:message="Players must be serially numbered, beginning with 1.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Players (player/@id) must be serially numbered, beginning with 1.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in 1 to count(player) satisfies (player[$i]/@id eq $i)" 
+			xerces:message="Players must be serially numbered, beginning with 1." />
 	</xs:complexType>
 
 	<xs:complexType name="time-controls-string">
@@ -759,29 +637,17 @@
 			</xs:element>
 		</xs:sequence>
 
-		<xs:assert test="every $i in 1 to count(period) satisfies (period[$i]/@number = $i)" xerces:message="Periods must be serially numbered, beginning with 1.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Periods are numbered consecutively.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in 1 to count(period) satisfies (period[$i]/@number = $i)" 
+			xerces:message="Periods must be serially numbered, beginning with 1." />
 
-		<xs:assert test="not(period[last()]/moves) or period[last()]/@type eq 'string'" xerces:message="Last period must not contain a 'move' node or must be of @type='string'.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Last period must not contain a 'move' node or must be of @type='string'.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="not(period[last()]/moves) or period[last()]/@type eq 'string'" 
+			xerces:message="Last period must not contain a 'move' node or must be of @type='string'." />
 
-		<xs:assert test="every $i in 1 to count(period)-1 satisfies (period[$i]/moves or period[$i]/@type eq 'string')" xerces:message="Every period except the last one must contain a 'move' node or must have Attribute @type='string' set.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Every period except the last one must contain a 'move' node or must have Attribute @type='string' set.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in 1 to count(period)-1 satisfies (period[$i]/moves or period[$i]/@type eq 'string')" 
+			xerces:message="Every period except the last one must contain a 'move' node or must have Attribute @type='string' set." />
 	</xs:complexType>
 
 	<xs:complexType name="period-string">
@@ -917,20 +783,14 @@
 			<xs:element name="loss" type="game-points-result" minOccurs="0" maxOccurs="unbounded" default="0" />
 		</xs:sequence>
 
-		<xs:assert test="every $a in win/@attribute satisfies (
+		<xs:assert 
+			test="every $a in win/@attribute satisfies (
 				if (count(win[@attribute eq $a][@color ne '']) gt 0)
 					then (empty(win[@attribute eq $a][@color eq '']) 
 									and count(win[@attribute eq $a][@color eq 'white']) eq 1 
 									and count(win[@attribute eq $a][@color eq 'black']) eq 1)
-					else (true())
-			)" xerces:message="The points are given either dependently on the @color or not, but never mixed.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					The points are given either dependently on the @color or not, 
-					but never mixed.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+					else (true()))" 
+			xerces:message="The points are given either dependently on the @color or not, but never mixed." />
 	</xs:complexType>
 
 	<xs:complexType name="game-points-result">
@@ -1009,13 +869,9 @@
 			</xs:annotation>
 		</xs:attribute>
 
-		<xs:assert test="if (not(xs:boolean(@special))) then (white + black eq 1) else true()" xerces:message="Points sum equals not 1. Set @special='true' for special results.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Points sum equals not 1. Set @special='true' for special results.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="if (not(xs:boolean(@special))) then (white + black eq 1) else true()" 
+			xerces:message="Points sum equals not 1. Set @special='true' for special results." />
 	</xs:complexType>
 
 	<xs:simpleType name="board-result">
@@ -1031,4 +887,12 @@
 			<xs:enumeration value="1" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="single-result-summarization">
+		<xs:simpleContent>
+			<xs:extension base="xs:nonNegativeInteger">
+				<xs:attribute name="attribute" type="result-attribute" use="optional" default="" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
 </xs:schema>

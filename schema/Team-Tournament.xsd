@@ -106,13 +106,9 @@
 										</xs:attribute>
 
 
-										<xs:assert test="not(@colors) or count(tokenize(xs:string(@colors), ' ')) eq xs:integer(.)" xerces:message="The number of listed @colors must be equal to the number of boards.">
-											<xs:annotation>
-												<xs:documentation xml:lang="EN">
-													The number of listed @colors must be equal to the number of boards.
-												</xs:documentation>
-											</xs:annotation>
-										</xs:assert>
+										<xs:assert 
+											test="not(@colors) or count(tokenize(xs:string(@colors), ' ')) eq xs:integer(.)" 
+											xerces:message="The number of listed @colors must be equal to the number of boards." />
 									</xs:extension>
 								</xs:simpleContent>
 							</xs:complexType>
@@ -132,14 +128,9 @@
 						</xs:element>
 					</xs:sequence>
 
-					<xs:assert test="if (count(team-members) eq 0 or xs:string(team-members) eq 'unbounded') then (true()) else (xs:integer(team-members) ge xs:integer(boards))" xerces:message="The maximal number of team-members must be greater or equal to the number of boards.">
-						<xs:annotation>
-							<xs:documentation xml:lang="EN">
-								The maximal number of team-members must be greater or equal 
-								to the number of boards.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:assert>
+					<xs:assert 
+						test="if (count(team-members) eq 0 or xs:string(team-members) eq 'unbounded') then (true()) else (xs:integer(team-members) ge xs:integer(boards))"
+						xerces:message="The maximal number of team-members must be greater or equal to the number of boards." />
 				</xs:complexType>
 			</xs:element>
 
@@ -476,32 +467,17 @@
 			<xs:element name="team" type="team" minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
 
-		<xs:assert test="every $i in 1 to count(team) satisfies (team[$i]/@id eq $i)" xerces:message="Teams must be serially numbered, beginning with 1.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Teams must be serially numbered, beginning with 1.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in 1 to count(team) satisfies (team[$i]/@id eq $i)" 
+			xerces:message="Teams must be serially numbered, beginning with 1." />
 
-		<xs:assert test="every $i in 1 to count(team)-1 satisfies (compare(lower-case(team[$i]/name), lower-case(team[$i+1]/name)) eq -1)" xerces:message="Teams must be sorted by their name.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Teams must be sorted by their name.
-					Attention: Sorting depends on collation, i.e. by default
-					  'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in 1 to count(team)-1 satisfies (compare(lower-case(team[$i]/name), lower-case(team[$i+1]/name)) eq -1)" 
+			xerces:message="Teams must be sorted by their name. Attention: Sorting depends on collation, i.e. by default 'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'." />
 
-		<xs:assert test="count(team/players/player/@position) eq 0 or count(team/players/player/@position) eq count(team/players/player)" xerces:message="The @position attribute must be set for either all or no player in the team's players list.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					The @position attribute must be set for either all or no 
-					player in the team's players list.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="count(team/players/player/@position) eq 0 or count(team/players/player/@position) eq count(team/players/player)" 
+			xerces:message="The @position attribute must be set for either all or no player in the team's players list." />
 	</xs:complexType>
 
 	<xs:complexType name="team">
@@ -598,14 +574,10 @@
 						</xs:element>
 					</xs:sequence>
 
-					<xs:assert test="every $i in 1 to count(location) satisfies 
-										(ends-with(location[$i]/@id, concat('-', $i)))" xerces:message="Location IDs must be serially numbered.">
-						<xs:annotation>
-							<xs:documentation xml:lang="EN">
-								Location IDs must be serially numbered (suffixed by "-$number").
-							</xs:documentation>
-						</xs:annotation>
-					</xs:assert>
+					<xs:assert 
+						test="every $i in 1 to count(location) satisfies 
+										(ends-with(location[$i]/@id, concat('-', $i)))" 
+						xerces:message="Location IDs must be serially numbered." />
 				</xs:complexType>
 			</xs:element>
 
@@ -630,16 +602,10 @@
 					</xs:sequence>
 
 
-					<xs:assert test="((count(player/@position) eq 0) or 
-										(every $i in 1 to count(player) satisfies (player[$i]/@position eq $i)))" xerces:message="The @position attribute must be set for either all or no players. The @position must be serially numbered if not empty.">
-						<xs:annotation>
-							<xs:documentation xml:lang="EN">
-								The @position attribute must be set for either all 
-								or no players. The @position must be serially numbered 
-								if not empty.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:assert>
+					<xs:assert 
+						test="((count(player/@position) eq 0) or 
+										(every $i in 1 to count(player) satisfies (player[$i]/@position eq $i)))" 
+						xerces:message="The @position attribute must be set for either all or no players. The @position must be serially numbered if not empty." />
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -649,13 +615,9 @@
 		<xs:attribute name="inactive" type="xs:boolean" default="false" use="optional" />
 
 
-		<xs:assert test="every $i in locations/location/@id satisfies starts-with($i, concat(@id, '-'))" xerces:message="The location @id must start with the team's id.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					The location @id must start with the team's ID.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in locations/location/@id satisfies starts-with($i, concat(@id, '-'))" 
+			xerces:message="The location @id must start with the team's id." />
 	</xs:complexType>
 
 	<xs:complexType name="pairings">
@@ -726,21 +688,13 @@
 			</xs:sequence>
 		</xs:choice>
 
-		<xs:assert test="every $i in 1 to count(round) satisfies (round[$i]/@number = $i)" xerces:message="Rounds must be serially numbered, beginning with 1.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Rounds must be serially numbered, beginning with 1.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in 1 to count(round) satisfies (round[$i]/@number = $i)" 
+			xerces:message="Rounds must be serially numbered, beginning with 1." />
 
-		<xs:assert test="every $i in 1 to count(inning) satisfies (inning[$i]/@number = $i)" xerces:message="Inning numbers must be serially numbered, beginning with 1.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Inning numbers must be serially numbered, beginning with 1.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $i in 1 to count(inning) satisfies (inning[$i]/@number = $i)" 
+			xerces:message="Inning numbers must be serially numbered, beginning with 1." />
 	</xs:complexType>
 
 	<xs:simpleType name="number-of-boards">
@@ -858,14 +812,10 @@
 						</xs:element>
 					</xs:sequence>
 
-					<xs:assert test="every $i in (table/team/@id) satisfies 
-										(count(table/team[@id = $i]) le 1)" xerces:message="Every team can be paired only once per round.">
-						<xs:annotation>
-							<xs:documentation xml:lang="EN">
-								Every team can be paired only once per round.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:assert>
+					<xs:assert 
+						test="every $i in (table/team/@id) satisfies 
+										(count(table/team[@id = $i]) le 1)" 
+						xerces:message="Every team can be paired only once per round." />
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -886,13 +836,9 @@
 
 								<xs:attribute name="location" type="team-location-id" use="required" />
 
-								<xs:assert test="substring-before(@location, '-') eq xs:string(@team)" xerces:message="Location must start with the team id.">
-									<xs:annotation>
-										<xs:documentation xml:lang="EN">
-											Location must start with the team id.
-										</xs:documentation>
-									</xs:annotation>
-								</xs:assert>
+								<xs:assert 
+									test="substring-before(@location, '-') eq xs:string(@team)" 
+									xerces:message="Location must start with the team id." />
 							</xs:complexType>
 						</xs:element>
 					</xs:choice>
@@ -979,9 +925,9 @@
 									<xs:element name="team" minOccurs="2" maxOccurs="2">
 										<xs:complexType>
 											<xs:sequence>
-												<xs:element name="wins" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
-												<xs:element name="draws" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
-												<xs:element name="losses" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+												<xs:element name="wins" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+												<xs:element name="draws" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+												<xs:element name="losses" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
 											</xs:sequence>
 
 											<xs:attribute name="position" use="required">
@@ -1038,13 +984,9 @@
 									</xs:element>
 								</xs:sequence>
 
-								<xs:assert test="every $i in 1 to count(board) satisfies (board[$i]/@number = $i)" xerces:message="Board numbers must be serially numbered, beginning with 1.">
-									<xs:annotation>
-										<xs:documentation xml:lang="EN">
-											Board numbers must be serially numbered, beginning with 1.
-										</xs:documentation>
-									</xs:annotation>
-								</xs:assert>
+								<xs:assert 
+									test="every $i in 1 to count(board) satisfies (board[$i]/@number = $i)" 
+									xerces:message="Board numbers must be serially numbered, beginning with 1." />
 							</xs:complexType>
 						</xs:element>
 					</xs:choice>
@@ -1072,33 +1014,19 @@
 					</xs:annotation>
 				</xs:attribute>
 
-				<xs:assert test="if (count(results) ge 1) then (count(results[not(xs:boolean(@overruled))]) eq 1) else true()" xerces:message="There must be exactly one result with @overrule='false'.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							There must be exactly one result with @overrule='false'.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="if (count(results) ge 1) then (count(results[not(xs:boolean(@overruled))]) eq 1) else true()" 
+					xerces:message="There must be exactly one result with @overrule='false'." />
 
-				<xs:assert test="every $team in (boards/board/white/@team | boards/board/black/@team | boards/board/player/@team) satisfies (
-											count(team[@id eq $team]) eq 1
-										)" xerces:message="The players listed in the single-player-pairings must be of one of the competing teams.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							The players listed in the single-player-pairings must be of one of the competing teams.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="every $team in (boards/board/white/@team | boards/board/black/@team | boards/board/player/@team) 
+							satisfies (count(team[@id eq $team]) eq 1)" 
+					xerces:message="The players listed in the single-player-pairings must be of one of the competing teams." />
 
-				<xs:assert test="every $id in (boards/board/white/@player | boards/board/black/@player) satisfies (
-											count(boards/board/white[@player = $id] | boards/board/black[@player = $id]) eq 1
-										)" xerces:message="Every player can be listed only once per table.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							Every player can be listed only once per table.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="every $id in (boards/board/white/@player | boards/board/black/@player) satisfies 
+											(count(boards/board/white[@player = $id] | boards/board/black[@player = $id]) eq 1)" 
+					xerces:message="Every player can be listed only once per table." />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -1116,14 +1044,6 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
-
-	<xs:complexType name="single-result-summarization">
-		<xs:simpleContent>
-			<xs:extension base="xs:nonNegativeInteger">
-				<xs:attribute name="attribute" type="tournament:result-attribute" use="optional" default="" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
 
 	<xs:complexType name="board">
 		<xs:complexContent>
@@ -1246,13 +1166,9 @@
 										</xs:element>
 									</xs:sequence>
 
-									<xs:assert test="every $i in 1 to count(game) satisfies (game[$i]/@number eq $i)" xerces:message="The games must be serially numbered by their @number attribute, beginning with 1.">
-										<xs:annotation>
-											<xs:documentation xml:lang="EN">
-												The games must be serially numbered by their @number attribute, beginning with 1.
-											</xs:documentation>
-										</xs:annotation>
-									</xs:assert>
+									<xs:assert 
+										test="every $i in 1 to count(game) satisfies (game[$i]/@number eq $i)" 
+										xerces:message="The games must be serially numbered by their @number attribute, beginning with 1." />
 								</xs:complexType>
 							</xs:element>
 
@@ -1268,9 +1184,9 @@
 										<xs:element name="player" minOccurs="2" maxOccurs="2">
 											<xs:complexType>
 												<xs:sequence>
-													<xs:element name="wins" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
-													<xs:element name="draws" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
-													<xs:element name="losses" type="single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+													<xs:element name="wins" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+													<xs:element name="draws" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+													<xs:element name="losses" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
 												</xs:sequence>
 
 												<xs:attribute name="position" use="required">
@@ -1311,21 +1227,13 @@
 									</xs:attribute>
 
 
-									<xs:assert test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" xerces:message="The players @position must be serially numbered, beginning with 1.">
-										<xs:annotation>
-											<xs:documentation xml:lang="EN">
-												The players @position must be serially numbered, beginning with 1.
-											</xs:documentation>
-										</xs:annotation>
-									</xs:assert>
+									<xs:assert 
+										test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" 
+										xerces:message="The players @position must be serially numbered, beginning with 1." />
 
-									<xs:assert test="sum(player[1]/*) eq sum(player[2]/*)" xerces:message="The number of saved results of both players must be equal.">
-										<xs:annotation>
-											<xs:documentation xml:lang="EN">
-												The number of saved results of both players must be equal.
-											</xs:documentation>
-										</xs:annotation>
-									</xs:assert>
+									<xs:assert 
+										test="sum(player[1]/*) eq sum(player[2]/*)" 
+										xerces:message="The number of saved results of both players must be equal." />
 								</xs:complexType>
 							</xs:element>
 						</xs:choice>
@@ -1344,56 +1252,29 @@
 				</xs:attribute>
 
 
-				<xs:assert test="if (count(result) ge 1) then (count(result[not(xs:boolean(@overruled))]) eq 1) else true()" xerces:message="If multiple results are given, only one should have the @overruled='false' set.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							If multiple results are given, only one should have the @overruled='false' set.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="if (count(result) ge 1) then (count(result[not(xs:boolean(@overruled))]) eq 1) else true()" 
+					xerces:message="If multiple results are given, only one should have the @overruled='false' set." />
 
-				<xs:assert test="white/@team ne black/@team and player[1]/@team ne player[2]/@team" xerces:message="Players must be of different teams.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							Players must be of different teams.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="white/@team ne black/@team and player[1]/@team ne player[2]/@team" 
+					xerces:message="Players must be of different teams." />
 
-				<xs:assert test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" xerces:message="The player/@position must be serially numbered, beginning with 1.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							The player/@position must be serially numbered, beginning with 1.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" 
+					xerces:message="The player/@position must be serially numbered, beginning with 1." />
 
-				<xs:assert test="xs:string(@swapped) eq 'false' or count(games) eq 0" xerces:message="The @swapped attribute of boards must not be set to 'true' in tournaments with multiple games per round. Please mark instead every single game as @swapped.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							The @swapped attribute of boards must not be set to 'true' in 
-							tournaments with multiple games per round. Please mark instead 
-							every single game as @swapped.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="xs:string(@swapped) eq 'false' or count(games) eq 0" 
+					xerces:message="The @swapped attribute of boards must not be set to 'true' in tournaments with multiple games per round. Please mark instead every single game as @swapped." />
 
-				<xs:assert test="every $id in (games/game/(white | black)/@player) satisfies ($id eq player[1]/@id or $id eq player[2]/@id)" xerces:message="The players referenced in each game must be the same as for this board.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							The players referenced in each game must be the same as for 
-							this board.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="every $id in (games/game/(white | black)/@player) satisfies ($id eq player[1]/@id or $id eq player[2]/@id)" 
+					xerces:message="The players referenced in each game must be the same as for this board." />
 
-				<xs:assert test="if (count(results) ge 1) then (count(results[not(xs:boolean(@overruled))]) eq 1) else true()" xerces:message="There must be exactly one result with @overrule='false'.">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							There must be exactly one result with @overrule='false'.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:assert>
+				<xs:assert 
+					test="if (count(results) ge 1) then (count(results[not(xs:boolean(@overruled))]) eq 1) else true()" 
+					xerces:message="There must be exactly one result with @overrule='false'." />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

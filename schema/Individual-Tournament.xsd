@@ -14,7 +14,9 @@
 				<xs:all>
 					<xs:element name="settings" type="settings" />
 
-					<xs:element name="rankings" type="rankings" minOccurs="0" />
+					<xs:element name="pairings" type="pairings" minOccurs="0" />
+
+<!-- 					<xs:element name="rankings" type="rankings" minOccurs="0" /> -->
 				</xs:all>
 			</xs:extension>
 		</xs:complexContent>
@@ -281,38 +283,17 @@
 		</xs:all>
 
 
-		<xs:assert test="if (count(pairings/system/colors/max-difference) gt 0) then (xs:integer(pairings/system/colors/max-difference) le xs:integer(general/rounds)) else (true())" xerces:message="The maximal color difference, specified in /tournament/settings/pairings/system/colors/max-difference, must be less or equal to the number of rounds, /tournament/settings/general/rounds.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					The maximal color difference, specified in 
-					/tournament/settings/pairings/system/colors/max-difference, 
-					must be less or equal to the number of rounds, 
-					/tournament/settings/general/rounds.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="if (count(pairings/system/colors/max-difference) gt 0) then (xs:integer(pairings/system/colors/max-difference) le xs:integer(general/rounds)) else (true())" 
+			xerces:message="The maximal color difference, specified in /tournament/settings/pairings/system/colors/max-difference, must be less or equal to the number of rounds, /tournament/settings/general/rounds." />
 
-		<xs:assert test="if (count(pairings/system/colors/max-series) gt 0) then (xs:integer(pairings/system/colors/max-series) le xs:integer(general/rounds)) else (true())" xerces:message="The maximal color series, specified in /tournament/settings/pairings/system/colors/max-series, must be less or equal to the number of rounds, /tournament/settings/general/rounds.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					The maximal color series, specified in 
-					/tournament/settings/pairings/system/colors/max-series, 
-					must be less or equal to the number of rounds, 
-					/tournament/settings/general/rounds.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="if (count(pairings/system/colors/max-series) gt 0) then (xs:integer(pairings/system/colors/max-series) le xs:integer(general/rounds)) else (true())" 
+			xerces:message="The maximal color series, specified in /tournament/settings/pairings/system/colors/max-series, must be less or equal to the number of rounds, /tournament/settings/general/rounds." />
 
-		<xs:assert test="every $round in pairings/system/pairing-constraints/constraint/rounds/round satisfies (xs:integer($round) le xs:integer(general/rounds))" xerces:message="Every round number listed in /tournament/settings/pairings/system/pairing-constraints/constraint/rounds/round must be less or equal to the number of rounds, /tournament/settings/general/rounds.">
-			<xs:annotation>
-				<xs:documentation xml:lang="EN">
-					Every round number listed in 
-					/tournament/settings/pairings/system/pairing-constraints/constraint/rounds/round 
-					must be less or equal to the number of rounds, 
-					/tournament/settings/general/rounds.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:assert>
+		<xs:assert 
+			test="every $round in pairings/system/pairing-constraints/constraint/rounds/round satisfies (xs:integer($round) le xs:integer(general/rounds))" 
+			xerces:message="Every round number listed in /tournament/settings/pairings/system/pairing-constraints/constraint/rounds/round must be less or equal to the number of rounds, /tournament/settings/general/rounds." />
 	</xs:complexType>
 
 	<xs:complexType name="rankings">
@@ -432,5 +413,341 @@
 				</xs:element>
 			</xs:choice>
 		</xs:sequence> -->
+	</xs:complexType>
+
+	<xs:complexType name="pairings">
+		<xs:choice>
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					In general, the 'pairings'-Node contains the 'round'-nodes.
+					But if it's a round-robin tournament 
+					(i.e. /tournament/settings/pairings/system/@type = 'Round-Robin')
+					and there are more than one inning played
+					(i.e. /tournament/settings/pairings/system[@type eq 'Round-Robin']/innings gt 1)
+					at this level there are first the 'inning'-nodes.
+				</xs:documentation>
+			</xs:annotation>
+
+			<xs:sequence>
+				<xs:element name="round" type="round" maxOccurs="unbounded">
+					<xs:unique name="_s_round-unique-player">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Each player is allowed to be paired only once per round.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:selector xpath="boards/board/player | boards/board/white | boards/board/black" />
+						<xs:field xpath="@id | @player" />
+					</xs:unique>
+				</xs:element>
+			</xs:sequence>
+
+			<xs:sequence>
+				<xs:element name="inning" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Inning. Contains at least an 'information' or 'boards' node.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="information" type="tournament:pairing-information_single" minOccurs="0" />
+
+							<xs:element name="notes" type="tournament:notes" minOccurs="0" />
+
+							<xs:element name="rounds" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="round" type="round" maxOccurs="unbounded">
+											<xs:unique name="_s_with-innings_round-unique-player">
+												<xs:annotation>
+													<xs:documentation xml:lang="EN">
+														Each player is allowed to be paired only once per round.
+													</xs:documentation>
+												</xs:annotation>
+
+												<xs:selector xpath="boards/board/player | boards/board/white | boards/board/black" />
+												<xs:field xpath="@id | @player" />
+											</xs:unique>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+				
+						<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:choice>
+
+
+		<xs:assert 
+			test="every $i in 1 to count(round) satisfies (round[$i]/@number = $i)" 
+			xerces:message="Round numbers must be serially numbered, beginning with 1." />
+
+		<xs:assert 
+			test="every $i in 1 to count(inning) satisfies (inning[$i]/@number = $i)" 
+			xerces:message="Inning numbers must be serially numbered, beginning with 1." />
+	</xs:complexType>
+
+	<xs:complexType name="round">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Single round in a Team Tournament.
+				Contains at least an 'information' or 'boards' node.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="information" type="tournament:pairing-information" minOccurs="0" />
+
+			<xs:element name="notes" type="tournament:notes" minOccurs="0" />
+
+			<xs:element name="boards" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="board" type="tournament:board_abstract" maxOccurs="unbounded">
+							<xs:alternative test="@attribute eq 'bye'" type="tournament:board_bye" />
+							<xs:alternative test="true()" type="board" />
+						</xs:element>
+					</xs:sequence>
+
+
+					<xs:assert 
+						test="every $i in 1 to count(board) satisfies (board[$i]/@number = $i)" 
+						xerces:message="Board numbers must be serially numbered, beginning with 1." />
+
+					<xs:assert 
+						test="every $i in (board/white/@player | board/black/@player) satisfies 
+										(count((board/white | board/black)[@player = $i]) eq 1)" 
+						xerces:message="Every player can be paired only once per round." />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+
+		<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="board">
+		<xs:complexContent>
+			<xs:extension base="tournament:board_abstract">
+				<xs:choice>
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Single game information by providing both players and their
+								results.
+								This format is used for every Tournament, where only a single
+								game is played per round.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:element name="white" type="tournament:board-single-player" />
+
+						<xs:element name="black" type="tournament:board-single-player" />
+
+						<xs:element name="result" type="tournament:result-single" minOccurs="0" maxOccurs="2">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									The game result can be saved upto two times:
+										* no 'result' node:
+											There is no result known, probably not yet played.
+										* single 'result' node:
+											Game played and result set.
+										* two 'result' nodes:
+											Original played result has been overruled by a tournament
+											instance like the arbiter. Exactly one 'result' element
+											has the @attribute='overruled' set.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Specification of opponents and their results for Tournaments
+								where more than one game is played per round.
+								There's no way to set a @swapped='true' attribute for the whole
+								pairing, instead every single game has to be marked as @swapped.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:element name="player" minOccurs="2" maxOccurs="2">
+							<xs:complexType>
+								<xs:attribute name="position" use="required">
+									<xs:annotation>
+										<xs:documentation xml:lang="EN">
+											Specification of being named first or second.
+										</xs:documentation>
+									</xs:annotation>
+
+									<xs:simpleType>
+										<xs:restriction base="xs:positiveInteger">
+											<xs:enumeration value="1" />
+											<xs:enumeration value="2" />
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+
+								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+							</xs:complexType>
+						</xs:element>
+
+						<xs:choice>
+							<xs:element name="games">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										List of all single games.
+									</xs:documentation>
+								</xs:annotation>
+
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="game" minOccurs="2" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="white" type="tournament:board-single-player" />
+
+													<xs:element name="black" type="tournament:board-single-player" />
+
+													<xs:element name="result" type="tournament:result-single" minOccurs="0" maxOccurs="2" />
+												</xs:sequence>
+
+												<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+
+												<xs:attribute name="swapped" type="xs:boolean" use="optional" default="false">
+													<xs:annotation>
+														<xs:documentation xml:lang="EN">
+															Flag whether the game has been played with swapped colors. The original
+															pairing is always saved, so the @swapped='true' attribute is the only
+															way to mark changed colors.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+
+											<xs:unique name="multiple-games_game_unique-opponent">
+												<xs:annotation>
+													<xs:documentation xml:lang="EN">
+														The white and black player must have different player-ID's
+														in their @player attribute.
+													</xs:documentation>
+												</xs:annotation>
+
+												<xs:selector xpath="white | black" />
+												<xs:field xpath="@player" />
+											</xs:unique>
+										</xs:element>
+									</xs:sequence>
+
+									<xs:assert 
+										test="every $i in 1 to count(game) satisfies (game[$i]/@number eq $i)" 
+										xerces:message="The games must be serially numbered by their @number attribute, beginning with 1." />
+								</xs:complexType>
+							</xs:element>
+
+							<xs:element name="results">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										List of the results of all (yet finished) single games.
+									</xs:documentation>
+								</xs:annotation>
+
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="player" minOccurs="2" maxOccurs="2">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="wins" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+													<xs:element name="draws" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+													<xs:element name="losses" type="tournament:single-result-summarization" minOccurs="0" maxOccurs="unbounded" />
+												</xs:sequence>
+
+												<xs:attribute name="position" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:positiveInteger">
+															<xs:enumeration value="1" />
+															<xs:enumeration value="2" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+											</xs:complexType>
+
+
+											<xs:unique name="_s_unique-result-entry_wins">
+												<xs:selector xpath="wins" />
+												<xs:field xpath="@attribute" />
+											</xs:unique>
+											<xs:unique name="_s_unique-result-entry_draws">
+												<xs:selector xpath="draws" />
+												<xs:field xpath="@attribute" />
+											</xs:unique>
+											<xs:unique name="_s_unique-result-entry_losses">
+												<xs:selector xpath="losses" />
+												<xs:field xpath="@attribute" />
+											</xs:unique>
+										</xs:element>
+									</xs:sequence>
+
+
+									<xs:attribute name="overruled" type="xs:boolean" use="optional" default="false">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Result which has been overruled by a tournament instance like
+												the arbiter. In this case the originally played result has been
+												marked with this @overruled attribute.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+
+
+									<xs:assert 
+										test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" 
+										xerces:message="The players @position must be serially numbered, beginning with 1." />
+									<xs:assert 
+										test="sum(player[1]/*) eq sum(player[2]/*)" 
+										xerces:message="The number of saved results of both players must be equal." />
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:sequence>
+				</xs:choice>
+
+				<xs:attribute name="swapped" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Flag whether the game has been played with swapped colors.
+							The original pairing is always saved, so the @swapped='true'
+							attribute is the only way to mark those results.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+
+				<xs:assert 
+					test="if (count(result) ge 1) then (count(result[not(xs:boolean(@overruled))]) eq 1) else true()" 
+					xerces:message="If multiple results are given, only one should have the @overruled='false' set." />
+
+				<xs:assert 
+					test="every $i in 1 to count(player) satisfies (player[$i]/@position and player[$i]/@position eq $i)" 
+					xerces:message="The player/@position must be serially numbered, beginning with 1." />
+
+				<xs:assert 
+					test="xs:string(@swapped) eq 'false' or count(games) eq 0" 
+					xerces:message="The @swapped attribute of boards must not be set to 'true' in tournaments with multiple games per round. Please mark instead every single game as @swapped." />
+
+				<xs:assert 
+					test="every $id in (games/game/(white | black)/@player) satisfies ($id eq player[1]/@id or $id eq player[2]/@id)" 
+					xerces:message="The players referenced in each game must be the same as for this board." />
+
+				<xs:assert 
+					test="if (count(results) ge 1) then (count(results[not(xs:boolean(@overruled))]) eq 1) else true()" 
+					xerces:message="There must be exactly one result with @overrule='false'." />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 </xs:schema>
