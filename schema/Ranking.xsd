@@ -1,0 +1,818 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema
+		targetNamespace="http://ctx.chess.io/Ranking"
+		xmlns="http://ctx.chess.io/Ranking"
+		version="1.0.0"
+		elementFormDefault="unqualified"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		xmlns:xerces="http://xerces.apache.org"
+		xmlns:tournament="http://ctx.chess.io"
+		xmlns:rating="http://ctx.chess.io/Rating">
+
+	<xs:import namespace="http://ctx.chess.io" schemaLocation="Tournament.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Rating" schemaLocation="Rating.xsd" />
+
+	<xs:complexType name="criteria-for-individuals">
+		<xs:sequence>
+			<xs:element name="criterion" type="criterion-for-individuals" maxOccurs="unbounded">
+ 				<xs:alternative test="@type eq 'Buchholz'" type="criterion-for-individuals_Buchholz" />
+ 				<xs:alternative test="@type eq 'Buchholz-Sum'" type="criterion-for-individuals_Buchholz-Sum" />
+				<xs:alternative test="@type eq 'Progressive-Score'" type="criterion-for-individuals_Progressive-Score" />
+				<xs:alternative test="@type eq 'Koya'" type="criterion-for-individuals_Koya" />
+				<xs:alternative test="@type eq 'Direct-Encounter'" type="criterion-for-individuals_Direct-Encounter" />
+				<xs:alternative test="@type eq 'Average-Rating'" type="criterion-for-individuals_Average-Rating" />
+				<xs:alternative test="@type eq 'Custom'" type="criterion-for-individuals_Custom" />
+
+				<xs:alternative
+					test="@type eq 'Points' or @type eq 'Sonneborn-Berger' 
+							or @type eq 'Sonneborn-Berger' 
+							or @type eq 'Progressive-Opponent-Score'"
+					type="criterion-for-individuals_with-points-system" />
+
+				<xs:alternative test="true()" type="criterion-for-individuals" />
+			</xs:element>
+		</xs:sequence>
+
+
+ 		<xs:assert
+ 			test="count(criterion[1][@type eq 'Direct-Encounter']) eq 0"
+ 			xerces:message="'Direct-Encounter' must not be the first criterion in the ranking settings." />
+
+		<xs:assert
+			test="every $i in 1 to count(criterion) satisfies (criterion[$i]/@number eq $i)"
+			xerces:message="Criteria must be serially numbered, beginning with 1." />
+
+		<xs:assert
+			test="empty(criterion[@type eq 'Random']) or criterion[@type eq 'Random']/@number eq criterion[position() eq last()]/@number"
+			xerces:message="Criterion 'Random' could only be the last one." />
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals">
+		<xs:attribute name="number" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Order to use the tiebreak rules.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Points" />
+
+					<xs:enumeration value="Buchholz" />
+
+					<xs:enumeration value="Buchholz-Sum" />
+
+					<xs:enumeration value="Progressive-Score" />
+
+					<xs:enumeration value="Sonneborn-Berger" />
+
+					<xs:enumeration value="Wins" />
+
+					<xs:enumeration value="Direct-Encounter" />
+
+					<xs:enumeration value="Average-Rating" />
+
+					<xs:enumeration value="Random" />
+
+					<xs:enumeration value="Rating-Performance">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								No full support yet.
+								[TODO]
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+
+					<xs:enumeration value="Rating-Difference">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								No full support yet.
+								[TODO]
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+
+					<xs:enumeration value="Black-Pieces">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Number of games played with the black pieces.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+
+					<xs:enumeration value="Progressive-Opponent-Score">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								See http://en.wikipedia.org/wiki/Tie-breaking_in_Swiss-system_tournaments#Cumulative_opponent.27s_score
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+
+					<xs:enumeration value="Koya">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Sum of the points of all opponents which reached
+								more than x percent of all points.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+
+					<xs:enumeration value="Custom">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Self-defined tiebreak rule.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_with-points-system">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals">
+				<xs:sequence>
+					<xs:element name="points-system" type="individual-game-points" minOccurs="0">
+						<xs:unique name="unique-game-points-individuals_win">
+							<xs:selector xpath="win" />
+							<xs:field xpath="@attribute" />
+							<xs:field xpath="@color" />
+						</xs:unique>
+						<xs:unique name="unique-game-points-individuals_draw">
+							<xs:selector xpath="draw" />
+							<xs:field xpath="@attribute" />
+							<xs:field xpath="@color" />
+						</xs:unique>
+						<xs:unique name="unique-game-points-individuals_loss">
+							<xs:selector xpath="loss" />
+							<xs:field xpath="@attribute" />
+							<xs:field xpath="@color" />
+						</xs:unique>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Buchholz">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals_with-points-system">
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Number of cuts. Might be missed or set to 0 to get the
+							normal Buchholz without any cuts.
+							The following standard tiebreaks can be modelled:
+								* Buchholz (lowest-cuts: 0 / highest-cuts: 0)
+								* Median Buchholz: (1 / 1)
+								* Median Buchholz 2: (2 / 2)
+								* Buchholz Cut 1 (1 / 0)
+								* Buchholz Cut 2 (2 / 0)
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:element name="lowest-cuts" type="xs:nonNegativeInteger" minOccurs="0" default="0" />
+					<xs:element name="highest-cuts" type="xs:nonNegativeInteger" minOccurs="0" default="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Buchholz-Sum">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals_with-points-system">
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Number of cuts. Might be missed or set to 0 to get the
+							normal Buchholz-Sum without any cuts.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:element name="lowest-cuts" type="xs:nonNegativeInteger" minOccurs="0" default="0" />
+					<xs:element name="highest-cuts" type="xs:nonNegativeInteger" minOccurs="0" default="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Progressive-Score">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals_with-points-system">
+				<xs:sequence>
+					<xs:element name="cuts" minOccurs="0" type="xs:nonNegativeInteger" default="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Number of cuts, beginning from the first round (default: 0).
+								Example: Is cuts=2, the player's progressive score minus
+								his points after the first and the second round is returned.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Koya">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals_with-points-system">
+				<xs:sequence>
+					<xs:element name="percentage" minOccurs="0" default="50">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Point percentage opponents must have reached to
+								get into this tiebreak calculation.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:simpleType>
+							<xs:restriction base="xs:decimal">
+								<xs:minExclusive value="0" />
+								<xs:maxInclusive value="100" />
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Direct-Encounter">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals">
+				<xs:sequence>
+					<xs:element name="sub-criteria" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Sub-criteria for the direct encounter if multiple players
+								are considered. Only "Wins" and "Black-Pieces" allowed.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="criterion" type="criterion-for-individuals" maxOccurs="2" />
+							</xs:sequence>
+
+							<xs:assert
+								test="every $c in criterion/@type satisfies (not(empty(index-of(('Wins', 'Black-Pieces'), xs:string($c)))))"
+								xerces:message="@type must be either 'Wins' or 'Black-Pieces'." />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Average-Rating">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals">
+				<xs:choice>
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							It's possible to provide either exactly one rating-type
+							or multiples, of which the minimum, maximum or the first
+							available is used.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:element name="rating-type" type="rating:system" />
+
+					<xs:element name="rating-types" type="xs:anyType">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Multiple rating types, of which the minimum, maximum or the first
+								value not equal zero is used.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:alternative test="@get eq 'order'" type="criterion-for-individuals_Rating-multiples_ordered">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									The first rating-type which has a value not equal to 0 is used.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:alternative>
+
+						<xs:alternative test="true()" type="criterion-for-individuals_Rating-multiples_minmax">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									The minimum or maximum of the given rating-system is used.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:alternative>
+
+
+						<xs:unique name="criterion-Average-Rating_unique-rating-types">
+							<xs:annotation>
+								<xs:documentation xml:lang="EN">
+									The given rating-types must be unique.
+								</xs:documentation>
+							</xs:annotation>
+
+							<xs:selector xpath="rating-type" />
+							<xs:field xpath="." />
+						</xs:unique>
+					</xs:element>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Custom">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals">
+				<xs:sequence>
+					<xs:element name="name">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Obligatory name of this tiebreak rule.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="abbreviation" type="xs:string" use="optional">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Optional Abbreviation, useful for example in printed rankings.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+
+					<xs:element name="type" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Optional Specification of the possible 
+								values: "numeric", "alphanumeric", "alphabetic".
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="type-for-Custom-criterion">
+									<xs:attribute name="order" type="order" use="optional">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Order by this tiebreak rule:
+												"ascending": Players with lower values are ranked higher.
+												"descending": vice-versa.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Rating-multiples" abstract="true">
+		<xs:attribute name="get" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="min" />
+					<xs:enumeration value="max" />
+					<xs:enumeration value="order" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Rating-multiples_minmax">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals_Rating-multiples">
+				<xs:sequence>
+					<xs:element name="rating-type" type="rating:system" minOccurs="2" maxOccurs="unbounded" />
+				</xs:sequence>
+
+				<xs:attribute name="on-empty" type="xs:nonNegativeInteger">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Value which is used if the player has no value for each
+							of the specified rating systems.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-individuals_Rating-multiples_ordered">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-individuals_Rating-multiples">
+				<xs:sequence>
+					<xs:element name="rating-type" minOccurs="1" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="rating:system">
+									<xs:attribute name="number" type="xs:positiveInteger" use="required" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+
+				<xs:attribute name="on-empty" type="xs:nonNegativeInteger">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Value which is used if the player has no value for each
+							of the specified rating systems.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+				<xs:assert
+					test="every $i in 1 to count(rating-type) satisfies (rating-type[$i]/@number eq $i)"
+					xerces:message="Rating-types must be serially numbered, beginning with 1." />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:simpleType name="order">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ascending" />
+			<xs:enumeration value="descending" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="type-for-Custom-criterion">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="numeric" />
+			<xs:enumeration value="alphanumeric" />
+			<xs:enumeration value="alphabetical" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="criteria-for-teams">
+		<xs:sequence>
+			<xs:element name="criterion" type="criterion-for-teams" maxOccurs="unbounded">
+				<xs:alternative test="@type eq 'Match-Points'" type="criterion-for-teams_Match-Points" />
+				<xs:alternative test="@type eq 'Buchholz'" type="criterion-for-teams_Buchholz" />
+				<xs:alternative test="@type eq 'Progressive-Score'" type="criterion-for-teams_Progressive-Score" />
+				<xs:alternative test="@type eq 'Direct-Encounter'" type="criterion-for-teams_Direct-Encounter" />
+				<xs:alternative test="@type eq 'Custom'" type="criterion-for-teams_Custom" />
+
+				<xs:alternative
+					test="@type eq 'Game-Points'
+							or @type eq 'Negative-Match-Points'
+							or @type eq 'Sonneborn-Berger'"
+					type="criterion-for-teams_with-points-system" />
+
+				<xs:alternative test="true()" type="criterion-for-teams" />
+			</xs:element>
+		</xs:sequence>
+
+		<xs:assert
+			test="every $i in 1 to count(criterion) satisfies (criterion[$i]/@number eq $i)"
+			xerces:message="Criteria must be serially numbered, beginning with 1" />
+
+		<xs:assert
+			test="empty(criterion[@type eq 'Random']) or criterion[@type eq 'Random']/@number eq criterion[position() eq last()]/@number"
+			xerces:message="Criterion 'Random' could only be the last one." />
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-teams">
+		<xs:attribute name="number" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="EN">
+					Order to use the tiebreak rules.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Match-Points" />
+
+					<xs:enumeration value="Game-Points" />
+
+					<xs:enumeration value="Negative-Match-Points" />
+
+					<xs:enumeration value="Buchholz" />
+
+					<xs:enumeration value="Sonneborn-Berger" />
+
+					<xs:enumeration value="Direct-Encounter" />
+
+					<xs:enumeration value="Berlin-System" />
+
+					<xs:enumeration value="Progressive-Score" />
+
+					<xs:enumeration value="Wins" />
+
+					<xs:enumeration value="Random" />
+
+					<xs:enumeration value="Custom" />
+
+					<xs:enumeration value="Rating-Performance">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								No full support yet.
+								[TODO]
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+
+					<xs:enumeration value="Rating-Difference">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								No full support yet.
+								[TODO]
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-teams_with-points-system">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-teams">
+				<xs:sequence>
+					<xs:element name="points-system" type="team-game-points" minOccurs="0">
+						<xs:unique name="t_unique-game-points-teams_win">
+							<xs:selector xpath="win" />
+							<xs:field xpath="@attribute" />
+						</xs:unique>
+						<xs:unique name="t_unique-game-points-teams_draw">
+							<xs:selector xpath="draw" />
+							<xs:field xpath="@attribute" />
+						</xs:unique>
+						<xs:unique name="t_unique-game-points-teams_loss">
+							<xs:selector xpath="loss" />
+							<xs:field xpath="@attribute" />
+						</xs:unique>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-teams_Match-Points">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-teams">
+				<xs:sequence>
+					<xs:element name="points-system" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="teams" type="team-game-points" minOccurs="0">
+									<xs:unique name="t_unique-game-points-teams_win_Match-Points">
+										<xs:selector xpath="win" />
+										<xs:field xpath="@attribute" />
+									</xs:unique>
+									<xs:unique name="t_unique-game-points-teams_draw_Match-Points">
+										<xs:selector xpath="draw" />
+										<xs:field xpath="@attribute" />
+									</xs:unique>
+									<xs:unique name="t_unique-game-points-teams_loss_Match-Points">
+										<xs:selector xpath="loss" />
+										<xs:field xpath="@attribute" />
+									</xs:unique>
+								</xs:element>
+
+								<xs:element name="individuals" type="individual-game-points" minOccurs="0">
+									<xs:unique name="unique-game-points-individuals_win_Match-Points">
+										<xs:selector xpath="win" />
+										<xs:field xpath="@attribute" />
+										<xs:field xpath="@color" />
+									</xs:unique>
+									<xs:unique name="unique-game-points-individuals_draw_Match-Points">
+										<xs:selector xpath="draw" />
+										<xs:field xpath="@attribute" />
+										<xs:field xpath="@color" />
+									</xs:unique>
+									<xs:unique name="unique-game-points-individuals_loss_Match-Points">
+										<xs:selector xpath="loss" />
+										<xs:field xpath="@attribute" />
+										<xs:field xpath="@color" />
+									</xs:unique>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-teams_Buchholz">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-teams_with-points-system">
+				<xs:sequence>
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Number of cuts. Might be missed or set to 0 to get the
+							normal Buchholz without any cuts.
+							The following standard tiebreaks can be modelled:
+								* Buchholz (lowest-cuts: 0 / highest-cuts: 0)
+								* Median Buchholz: (1 / 1)
+								* Median Buchholz 2: (2 / 2)
+								* Buchholz Cut 1 (1 / 0)
+								* Buchholz Cut 2 (2 / 0)
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:element name="lowest-cuts" type="xs:nonNegativeInteger" minOccurs="0" default="0" />
+					<xs:element name="highest-cuts" type="xs:nonNegativeInteger" minOccurs="0" default="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-teams_Direct-Encounter">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-teams">
+				<xs:sequence>
+					<xs:element name="sub-criteria" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Sub-criteria for the direct encounter if multiple players
+								are considered. Only "Game-Points", "Match-Points" and 
+								"Sonneborn-Berger" allowed.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="criterion" type="criterion-for-teams" maxOccurs="3" />
+							</xs:sequence>
+
+							<xs:assert 
+								test="every $c in criterion/@type satisfies (
+										not(empty(index-of(('Game-Points', 'Match-Points', 'Sonneborn-Berger'), xs:string($c)))))"
+								xerces:message="@type must be either 'Game-Points', 'Match-Points' or 'Sonneborn-Berger'." />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-teams_Progressive-Score">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-teams_with-points-system">
+				<xs:sequence>
+					<xs:element name="cuts" minOccurs="0" type="xs:nonNegativeInteger" default="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Number of cuts, beginning from the first round (default: 0).
+								Example: Is cuts=2, the teams's progressive score minus
+								its points after the first and the second round is returned.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="criterion-for-teams_Custom">
+		<xs:complexContent>
+			<xs:extension base="criterion-for-teams">
+				<xs:sequence>
+					<xs:element name="name">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Obligatory name of this tiebreak rule.
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="abbreviation" type="xs:string" use="optional">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Optional Abbreviation, useful for example in printed rankings.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+
+					<xs:element name="type" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Optional Specification of the possible 
+								values: "numeric", "alphanumeric", "alphabetic".
+							</xs:documentation>
+						</xs:annotation>
+
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="type-for-Custom-criterion">
+									<xs:attribute name="order" type="order" use="optional">
+										<xs:annotation>
+											<xs:documentation xml:lang="EN">
+												Order by this tiebreak rule:
+												"ascending": Players with lower values are ranked higher.
+												"descending": vice-versa.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="individual-game-points">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Points system for player pairings.
+				Default: Win=1, Draw=0.5, Loss=0.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="win" type="game-points-result" minOccurs="0" maxOccurs="unbounded" default="1" />
+			<xs:element name="draw" type="game-points-result" minOccurs="0" maxOccurs="unbounded" default="0.5" />
+			<xs:element name="loss" type="game-points-result" minOccurs="0" maxOccurs="unbounded" default="0" />
+		</xs:sequence>
+
+		<xs:assert 
+			test="every $a in win/@attribute satisfies (
+				if (count(win[@attribute eq $a][@color ne '']) gt 0)
+					then (empty(win[@attribute eq $a][@color eq '']) 
+									and count(win[@attribute eq $a][@color eq 'white']) eq 1 
+									and count(win[@attribute eq $a][@color eq 'black']) eq 1)
+					else (true()))" 
+			xerces:message="The points are given either dependently on the @color or not, but never mixed." />
+	</xs:complexType>
+
+	<xs:complexType name="team-game-points">
+		<xs:annotation>
+			<xs:documentation xml:lang="EN">
+				Points system for team pairings.
+				Default: Win=2, Draw=1, Loss=0.
+			</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="win" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="2" />
+			<xs:element name="draw" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="1" />
+			<xs:element name="loss" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="0" />
+		</xs:sequence>
+
+		<xs:attribute name="win-mode" type="win-mode" use="optional" default="more than opponent" />
+	</xs:complexType>
+
+	<xs:complexType name="game-points-result">
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="attribute" type="tournament:result-attribute" use="optional" default="" />
+
+				<xs:attribute name="color" type="tournament:color-with-blank" use="optional" default="" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="game-points-team-result">
+		<xs:simpleContent>
+			<xs:extension base="xs:decimal">
+				<xs:attribute name="attribute" type="tournament:result-attribute" use="optional" default="" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="win-mode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="more than 50%">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						The team that has more than 50% of the points has won.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+
+			<xs:enumeration value="more than opponent">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						The team that has more points than its opponent has won.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

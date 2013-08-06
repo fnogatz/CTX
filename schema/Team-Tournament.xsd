@@ -7,12 +7,14 @@
 		xmlns:tournament="http://ctx.chess.io"
 		xmlns:person="http://ctx.chess.io/Person"
 		xmlns:club="http://ctx.chess.io/Club"
-		xmlns:contact="http://ctx.chess.io/Contact">
+		xmlns:contact="http://ctx.chess.io/Contact"
+		xmlns:ranking="http://ctx.chess.io/Ranking">
 
 	<xs:import namespace="http://ctx.chess.io" schemaLocation="CTX.xsd" />
 	<xs:import namespace="http://ctx.chess.io/Person" schemaLocation="Person.xsd" />
 	<xs:import namespace="http://ctx.chess.io/Club" schemaLocation="Club.xsd" />
 	<xs:import namespace="http://ctx.chess.io/Contact" schemaLocation="Contact.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Ranking" schemaLocation="Ranking.xsd" />
 
 	<xs:include schemaLocation="Country-Code.xsd" />
 
@@ -57,7 +59,7 @@
 				</xs:annotation>
 
 				<xs:complexType>
-					<xs:sequence>
+					<xs:all>
 						<xs:element name="rounds" type="xs:positiveInteger">
 							<xs:annotation>
 								<xs:documentation xml:lang="EN">
@@ -126,56 +128,11 @@
 								<xs:union memberTypes="xs:positiveInteger str-unbounded" />
 							</xs:simpleType>
 						</xs:element>
-					</xs:sequence>
+					</xs:all>
 
 					<xs:assert 
 						test="if (count(team-members) eq 0 or xs:string(team-members) eq 'unbounded') then (true()) else (xs:integer(team-members) ge xs:integer(boards))"
 						xerces:message="The maximal number of team-members must be greater or equal to the number of boards." />
-				</xs:complexType>
-			</xs:element>
-
-			<xs:element name="points-system" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation xml:lang="EN">
-						Used points-system.
-					</xs:documentation>
-				</xs:annotation>
-
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="individuals" type="tournament:game-points" minOccurs="0">
-							<xs:unique name="t_unique-game-points-individuals_win">
-								<xs:selector xpath="win" />
-								<xs:field xpath="@attribute" />
-								<xs:field xpath="@color" />
-							</xs:unique>
-							<xs:unique name="t_unique-game-points-individuals_draw">
-								<xs:selector xpath="draw" />
-								<xs:field xpath="@attribute" />
-								<xs:field xpath="@color" />
-							</xs:unique>
-							<xs:unique name="t_unique-game-points-individuals_loss">
-								<xs:selector xpath="loss" />
-								<xs:field xpath="@attribute" />
-								<xs:field xpath="@color" />
-							</xs:unique>
-						</xs:element>
-
-						<xs:element name="teams" type="game-points" minOccurs="0">
-							<xs:unique name="t_unique-game-points-teams_win">
-								<xs:selector xpath="win" />
-								<xs:field xpath="@attribute" />
-							</xs:unique>
-							<xs:unique name="t_unique-game-points-teams_draw">
-								<xs:selector xpath="draw" />
-								<xs:field xpath="@attribute" />
-							</xs:unique>
-							<xs:unique name="t_unique-game-points-teams_loss">
-								<xs:selector xpath="loss" />
-								<xs:field xpath="@attribute" />
-							</xs:unique>
-						</xs:element>
-					</xs:all>
 				</xs:complexType>
 			</xs:element>
 
@@ -275,6 +232,72 @@
 					</xs:all>
 				</xs:complexType>
 			</xs:element> -->
+
+			<xs:element name="rankings" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="teams">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="criteria" type="ranking:criteria-for-teams">
+										<xs:unique name="_t_ranking-criteria_unique-custom-names">
+											<xs:annotation>
+												<xs:documentation xml:lang="EN">
+													The names of self-defined ranking criteria are unique.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name" />
+										</xs:unique>
+
+										<xs:unique name="_t_ranking-criteria_unique-custom-abbreviation">
+											<xs:annotation>
+												<xs:documentation xml:lang="EN">
+													The abbreviations of self-defined ranking criteria are unique.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name/@abbreviation" />
+										</xs:unique>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+
+						<xs:element name="individuals">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="criteria" type="ranking:criteria-for-individuals">
+										<xs:unique name="_s_ranking-criteria_unique-custom-names">
+											<xs:annotation>
+												<xs:documentation xml:lang="EN">
+													The names of self-defined ranking criteria are unique.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name" />
+										</xs:unique>
+
+										<xs:unique name="_s_ranking-criteria_unique-custom-abbreviation">
+											<xs:annotation>
+												<xs:documentation xml:lang="EN">
+													The abbreviations of self-defined ranking criteria are unique.
+												</xs:documentation>
+											</xs:annotation>
+
+											<xs:selector xpath="criterion" />
+											<xs:field xpath="name/@abbreviation" />
+										</xs:unique>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 
 <!-- 			<xs:element name="rankings" minOccurs="0">
 				<xs:complexType>
@@ -706,53 +729,6 @@
 	<xs:simpleType name="str-unbounded">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="unbounded" />
-		</xs:restriction>
-	</xs:simpleType>
-
-	<xs:complexType name="game-points">
-		<xs:annotation>
-			<xs:documentation xml:lang="EN">
-				Game points for team pairings.
-				Standard: Win=2, Draw=1, Loss=0.
-				In contrast to individual pairings the points system
-				can't depend on the colors/positions.
-			</xs:documentation>
-		</xs:annotation>
-
-		<xs:sequence>
-			<xs:element name="win" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="2" />
-			<xs:element name="draw" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="1" />
-			<xs:element name="loss" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="0" />
-		</xs:sequence>
-
-		<xs:attribute name="win-mode" type="win-mode" use="optional" default="more than opponent" />
-	</xs:complexType>
-
-	<xs:complexType name="game-points-team-result">
-		<xs:simpleContent>
-			<xs:extension base="xs:decimal">
-				<xs:attribute name="attribute" type="tournament:result-attribute" use="optional" default="" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-
-	<xs:simpleType name="win-mode">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="more than 50%">
-				<xs:annotation>
-					<xs:documentation xml:lang="EN">
-						The team that has more than 50% of the points has won.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-
-			<xs:enumeration value="more than opponent">
-				<xs:annotation>
-					<xs:documentation xml:lang="EN">
-						The team that has more points than its opponent has won.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 

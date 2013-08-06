@@ -4,9 +4,11 @@
 		version="1.0.0"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		xmlns:xerces="http://xerces.apache.org"
-		xmlns:tournament="http://ctx.chess.io">
+		xmlns:tournament="http://ctx.chess.io"
+		xmlns:ranking="http://ctx.chess.io/Ranking">
 
 	<xs:import namespace="http://ctx.chess.io" schemaLocation="CTX.xsd" />
+	<xs:import namespace="http://ctx.chess.io/Ranking" schemaLocation="Ranking.xsd" />
 
 	<xs:complexType name="tournament">
 		<xs:complexContent>
@@ -51,24 +53,6 @@
 						</xs:element>
 					</xs:all>
 				</xs:complexType>
-			</xs:element>
-
-			<xs:element name="points-system" type="tournament:game-points" minOccurs="0">
-				<xs:unique name="s_unique-game-points-individuals_win">
-					<xs:selector xpath="win" />
-					<xs:field xpath="@attribute" />
-					<xs:field xpath="@color" />
-				</xs:unique>
-				<xs:unique name="s_unique-game-points-individuals_draw">
-					<xs:selector xpath="draw" />
-					<xs:field xpath="@attribute" />
-					<xs:field xpath="@color" />
-				</xs:unique>
-				<xs:unique name="s_unique-game-points-individuals_loss">
-					<xs:selector xpath="loss" />
-					<xs:field xpath="@attribute" />
-					<xs:field xpath="@color" />
-				</xs:unique>
 			</xs:element>
 
 <!-- 			<xs:element name="pairings" minOccurs="0">
@@ -169,6 +153,36 @@
 				</xs:complexType>
 			</xs:element> -->
 
+			<xs:element name="rankings" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="criteria" type="ranking:criteria-for-individuals">
+							<xs:unique name="_s_rounds-ranking-criteria_unique-custom-names">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										The names of self-defined ranking criteria are unique.
+									</xs:documentation>
+								</xs:annotation>
+
+								<xs:selector xpath="criterion" />
+								<xs:field xpath="name" />
+							</xs:unique>
+
+							<xs:unique name="_s_rounds-ranking-criteria_unique-custom-abbreviation">
+								<xs:annotation>
+									<xs:documentation xml:lang="EN">
+										The abbreviations of self-defined ranking criteria are unique.
+									</xs:documentation>
+								</xs:annotation>
+
+								<xs:selector xpath="criterion" />
+								<xs:field xpath="name/@abbreviation" />
+							</xs:unique>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
 <!-- 			<xs:element name="rankings" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -224,45 +238,6 @@
 											<xs:field xpath="name" />
 										</xs:unique>
 										<xs:unique name="_s_initial-ranking-criteria_unique-custom-abbreviation">
-											<xs:annotation>
-												<xs:documentation xml:lang="DE">
-													Die in criterion/name/@abbreviation genannte Abkürzung von 
-													selbst definierten Feinwertungen ist eindeutig.
-												</xs:documentation>
-											</xs:annotation>
-
-											<xs:selector xpath="criterion" />
-											<xs:field xpath="name/@abbreviation" />
-										</xs:unique>
-									</xs:element>
-								</xs:all>
-							</xs:complexType>
-						</xs:element>
-
-						<xs:element name="rounds" minOccurs="0">
-							<xs:complexType>
-								<xs:all>
-									<xs:element name="criteria" type="individual-rounds-ranking-criteria">
-										<xs:annotation>
-											<xs:documentation xml:lang="DE">
-												Wertungen zur Bildung der Rangliste.
-											</xs:documentation>
-										</xs:annotation>
-
-
-										<xs:unique name="_s_rounds-ranking-criteria_unique-custom-names">
-											<xs:annotation>
-												<xs:documentation xml:lang="DE">
-													Der in criterion/name genannte Name von selbst definierten
-													Feinwertungen ist eindeutig.
-												</xs:documentation>
-											</xs:annotation>
-
-											<xs:selector xpath="criterion" />
-											<xs:field xpath="name" />
-										</xs:unique>
-
-										<xs:unique name="_s_rounds-ranking-criteria_unique-custom-abbreviation">
 											<xs:annotation>
 												<xs:documentation xml:lang="DE">
 													Die in criterion/name/@abbreviation genannte Abkürzung von 

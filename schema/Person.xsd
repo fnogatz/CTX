@@ -187,6 +187,32 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="organizer">
+		<xs:complexContent>
+			<xs:extension base="person">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						Additional information about a single organizer.
+					</xs:documentation>
+				</xs:annotation>
+
+				<xs:sequence>
+					<xs:element name="licence" minOccurs="0" type="organizer-licence">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">
+								Organizer's licence.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+
+				<xs:attribute name="role" type="organizer-role" />
+
+				<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="name-string">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
@@ -448,4 +474,90 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:complexType name="organizers-string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" fixed="string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="organizers-list">
+		<xs:sequence>
+			<xs:element name="organizer" type="organizer" maxOccurs="unbounded" />
+		</xs:sequence>
+
+		<xs:assert
+			test="every $i in 1 to count(organizer) satisfies (organizer[$i]/@id = $i)"
+			xerces:message="Organizers must be serially numbered, beginning with 1." />
+
+		<xs:assert
+			test="
+				every $i in 1 to count(organizer)-1 satisfies (
+					if (organizer[$i]/name/@type eq 'string') then (
+						if (organizer[$i+1]/name/@type eq 'string') then (
+							compare(
+								lower-case(organizer[$i]/name),
+								lower-case(organizer[$i+1]/name)
+							) le 0
+						) else (
+							compare(
+								lower-case(organizer[$i]/name),
+								lower-case(concat(organizer[$i+1]/name/surname, ',', organizer[$i+1]/name/prename, ',', organizer[$i+1]/name/academic-title))
+							) le 0
+						)
+					) else (
+						if (organizer[$i+1]/name/@type eq 'string') then (
+							compare(
+								lower-case(concat(organizer[$i]/name/surname, ',', organizer[$i]/name/prename, ',', organizer[$i]/name/academic-title)),
+								lower-case(organizer[$i+1]/name)
+							) le 0
+						) else (
+							compare(
+								lower-case(concat(organizer[$i]/name/surname, ',', organizer[$i]/name/prename, ',', organizer[$i]/name/academic-title)),
+								lower-case(concat(organizer[$i+1]/name/surname, ',', organizer[$i+1]/name/prename, ',', organizer[$i+1]/name/academic-title))
+							) le 0
+						)
+					)
+				)"
+			xerces:message="Organizers must be sorted by their name. Attention: Sorting depends on collation, i.e. by default 'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'." />
+	</xs:complexType>
+
+	<xs:simpleType name="organizer-role">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="chief" />
+			<xs:enumeration value="deputy" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="organizer-licence">
+		<xs:simpleContent>
+			<xs:extension base="organizer-licence-value">
+				<xs:attribute name="federation">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Federation that handed out the licence.
+						</xs:documentation>
+					</xs:annotation>
+
+					<xs:simpleType>
+						<xs:union memberTypes="Country-Code str_FIDE" />
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="organizer-licence-value">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="IO">
+				<xs:annotation>
+					<xs:documentation xml:lang="EN">
+						International Organizer, awarded by the FIDE.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>
