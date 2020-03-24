@@ -1,14 +1,14 @@
 # CTX - Chess Tournament Exchange Format
 
-The <b>C</b>hess <b>T</b>ournament E<b>x</b>change (CTX) Format is an application of XML for describing chess tournaments. It aims to include all relevant data of a chess tournament, i.e. all information about participating players and teams, their results and rankings as well as general tournament information like round times, names of all arbiters etc. It shall be a source format for rating calculations (Elo, DWZ, ...), easy to parse and exchange. Its official filename extension is `.ctx`.
+The <b>C</b>hess <b>T</b>ournament E<b>x</b>change (CTX) Format is an application of XML for describing chess tournaments. It aims to include all relevant data of a chess tournament, i.e. all information about participating players and teams, their results and rankings, as well as general tournament information like round times, names of all arbiters, etc. It shall be a source format for rating calculations (Elo, DWZ, ...), easy to parse and exchange. Its filename extension is `.ctx`.
 
 ## Validation
 
-The Chess Tournament Exchange Format is defined by a large XML Schema (XSD). As it's a XSD of version 1.1, the number of tools to validate a CTX file against the CTX-Schema is limited. With [Apache Xerces](http://xerces.apache.org/) you can validate your CTX file by the following command:
+The Chess Tournament Exchange Format is defined by an XML Schema (XSD) of version 1.1. For instance, you can validate your CTX file with [Apache Xerces](http://xerces.apache.org/) by the following command:
 
-	java jaxp.SourceValidator -xsd11 -a CTX.xsd -i /your/tournament.ctx
-
-An installation introduction in German can be found on [ioexception.de](http://www.ioexception.de/2012/08/20/xml-dokumente-per-xsd-1-1-mit-apache-xerces-j-validieren/).
+```sh
+java jaxp.SourceValidator -xsd11 -a CTX.xsd -i tournament.ctx
+```
 
 ## Related Tools
 
@@ -18,9 +18,9 @@ An installation introduction in German can be found on [ioexception.de](http://w
 
 ## Todo
 
-* Split the big XSD file into parts, e.g. one for each first-child-element.
-* Add english `xs:annotation`.
-* Provide a more relaxed, XSD 1.0 compatible Schema without the `xs:assert`, `xs:assertion` and `xs:alternative` sugar.
+- Split the big XSD file into parts, e.g. one for each first-child-element.
+- Add english `xs:annotation`.
+- Provide a more relaxed, XSD 1.0 compatible Schema without the `xs:assert`, `xs:assertion` and `xs:alternative` sugar.
 
 ## FAQ
 
@@ -36,5 +36,5 @@ No. Although XML is easily human-readable, the CTX schema is very hard-constrain
 
 ### What are the main targets?
 
-* Expressiveness: Avoid text fields, provide highly structured elements.
-* One-to-one correspondence: Every tournament state is defined by one and only one CTX file and vice-versa. This allows to make a `diff` over two tournaments (states).
+- Expressiveness: Avoid text fields, provide highly structured elements.
+- One-to-one correspondence: Every tournament state is defined by one and only one CTX file and vice-versa. This allows to make a `diff` over two tournaments (states), given a previously defined way of XML indentation.
