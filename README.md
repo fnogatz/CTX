@@ -18,7 +18,7 @@ Apache Xerces requires Java. By calling `make xerces`, Apache Xerces gets downlo
 
 ## Related Tools
 
-*This section has not been updated since 2013. Some information might be obsolete.*
+*This section has not been updated since 2013. Some information might be outdated.*
 
 ### Convert Swiss-Chess Tournament (SWT) files
 
