@@ -9,7 +9,7 @@ all: types examples
 
 types:
 	@$(foreach file, $(wildcard $(DIR)/types/*/*.xml), ($(VALIDATE) -x $(DIR)/types.xsd $(file));)
-	@$(foreach file, $(wildcard $(DIR)/types/*/failing/*.xml), ($(VALIDATE) -q -n -x $(DIR)/types.xsd $(file));)
+	@$(foreach file, $(wildcard $(DIR)/types/*/invalid/*.xml), ($(VALIDATE) -q -n -x $(DIR)/types.xsd $(file));)
 
 examples:
 	@$(foreach file, $(wildcard $(DIR_EXAMPLES)/*.ctx), ($(VALIDATE) -x $(DIR)/../schema/CTX.xsd $(file));)
