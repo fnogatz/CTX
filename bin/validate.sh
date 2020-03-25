@@ -8,7 +8,7 @@ where:
     -q  quiet, do not print validation errors
     -n  negative, validation should fail"
 
-schema="../schema/CTX.xsd"
+schema="./schema/CTX.xsd"
 print_errors=1
 should_fail=0
 while getopts ':hqnx:' option; do

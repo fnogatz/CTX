@@ -745,7 +745,7 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:assert>
-
+<!--
         <xs:assert test="count((//@federation | //federation/@code)[string-length(xs:string(.)) eq 2]) eq 0 or count((//@federation | //federation/@code)[string-length(xs:string(.)) eq 3]) eq 0" xerces:message="You have to use either IOC or ISO3166 Country Codes in the complete XML file. Please do not mix both types.">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
@@ -754,6 +754,7 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:assert>
+-->
     </xs:complexType>
 
     <xs:complexType name="tournament-single">
@@ -1259,7 +1260,7 @@
                     </xs:element>
                 </xs:all>
 
-                <xs:assert test="every $id in players/player/@id satisfies ( count(rankings/initial/player[@id eq $id]) eq 1 )" xerces:message="Every player listed in /tournament/players must also be listed in the initial ranking.">
+                <xs:assert test="if (count(rankings)) then (every $id in players/player/@id satisfies ( count(rankings/initial/player[@id eq $id]) eq 1 )) else (true())" xerces:message="Every player listed in /tournament/players must also be listed in the initial ranking.">
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
                             Jeder in /tournament/players gelistete Spieler 
