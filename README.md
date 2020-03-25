@@ -1,16 +1,24 @@
-# CTX - Chess Tournament Exchange Format
+# CTX - Chess Tournament Exchange
 
-The <b>C</b>hess <b>T</b>ournament E<b>x</b>change (CTX) Format is an application of XML for describing chess tournaments. It aims to include all relevant data of a chess tournament, i.e. all information about participating players and teams, their results and rankings, as well as general tournament information like round times, names of all arbiters, etc. It shall be a source format for rating calculations (Elo, DWZ, ...), easy to parse and exchange. Its filename extension is `.ctx`.
+The <b>C</b>hess <b>T</b>ournament E<b>x</b>change (CTX) format is an application of XML for describing chess tournaments. It aims to include all relevant data of a chess tournament, i.e. all information about participating players and teams, their results and rankings, as well as general tournament information like round times, names of all arbiters, etc. It shall be a source format for rating calculations (Elo, DWZ, ...), easy to parse and exchange. Its filename extension is `.ctx`.
 
 ## Validation
 
-The Chess Tournament Exchange Format is defined by an XML Schema (XSD) of version 1.1. For instance, you can validate your CTX file with [Apache Xerces](http://xerces.apache.org/) by the following command:
+CTX is defined by an XML Schema (XSD) of version 1.1. CTX files can be validated with any validator that supports XSD 1.1.
+
+### Using Apache Xerces
+
+For instance, you can validate your CTX file with [Apache Xerces](http://xerces.apache.org/) by the following command:
 
 ```sh
-java jaxp.SourceValidator -xsd11 -a CTX.xsd -i tournament.ctx
+java jaxp.SourceValidator -xsd11 -fx -a CTX.xsd -i tournament.ctx
 ```
 
+Apache Xerces requires Java. By calling `make xerces`, Apache Xerces gets downloaded into the directory `xerces`. As part of this repository, we provide a small bash script to validate a CTX file using this local Xerces instance. Additional information can be found in the [Readme-file in this project's `bin` directory](bin/README.md).
+
 ## Related Tools
+
+*This section has not been updated since 2013. Some information might be obsolete.*
 
 ### Convert Swiss-Chess Tournament (SWT) files
 

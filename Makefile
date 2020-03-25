@@ -1,7 +1,7 @@
 APACHE_MIRROR ?= https://downloads.apache.org/
 XERCES_DOWNLOAD_FILE ?= xerces/j/binaries/Xerces-J-bin.2.12.1-xml-schema-1.1.tar.gz
 
-.PHONY: xerces clean
+.PHONY: xerces clean test
 
 xerces:
 	mkdir -p xerces
@@ -9,3 +9,6 @@ xerces:
 
 clean:
 	rm -rf xerces
+
+test:
+	$(MAKE) -C test all

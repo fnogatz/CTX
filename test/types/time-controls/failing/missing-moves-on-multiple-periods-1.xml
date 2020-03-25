@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<time-controls>
+    <period number="1">
+        <time>60m</time>
+    </period>
+    <period number="2">
+        <time>15m</time>
+    </period>
+</time-controls>
