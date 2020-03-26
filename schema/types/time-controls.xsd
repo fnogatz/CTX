@@ -6,43 +6,33 @@
         <xs:sequence>
             <xs:element name="period" type="xs:anyType" minOccurs="1" maxOccurs="unbounded">
                 <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Erlaubt die Angabe einer Zeitperiode als einen der folgenden Typen:
-                            * period-complex: Angabe als komplexen Typ (bevorzugt)
-                            * period-string: Angabe als Freitext (Kompatibilität)
+                    <xs:documentation xml:lang="en">
+                        The periods have to be given as one of:
+                            * period-complex: complex type with elements for moves, time, and increment
+                            * period-string: simple type for unstructured text
                     </xs:documentation>
                 </xs:annotation>
 
-                <xs:alternative test="@type and @type eq 'string'" type="period-string" />
-                <xs:alternative test="true()" type="period-complex" />
+                <xs:alternative
+                    test="@type and @type eq 'string'"
+                    type="period-string" />
+                <xs:alternative
+                    test="true()"
+                    type="period-complex" />
             </xs:element>
         </xs:sequence>
 
-        <xs:assert test="every $i in 1 to count(period) satisfies (period[$i]/@number = $i)" xerces:message="Periods must be serially numbered, beginning with 1.">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Perioden müssen aufsteigend nummeriert sein, beginnend mit 1.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:assert>
+        <xs:assert
+            test="every $i in 1 to count(period) satisfies (period[$i]/@number = $i)"
+            xerces:message="Periods must be serially numbered, beginning with 1." />
 
-        <xs:assert test="not(period[last()]/moves) or period[last()]/@type eq 'string'" xerces:message="Last period must not contain a 'move' node or must be of @type='string'.">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die letzte Periode darf kein "moves"-Node mehr enthalten
-                    oder muss vom @type='string' gesetzt haben.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:assert>
+        <xs:assert
+            test="not(period[last()]/moves) or period[last()]/@type eq 'string'"
+            xerces:message="Last period must not contain a 'move' node or must be of @type='string'." />
 
-        <xs:assert test="every $i in 1 to count(period)-1 satisfies (period[$i]/moves or period[$i]/@type eq 'string')" xerces:message="Every period except the last one must contain a 'move' node or must have Attribute @type='string' set.">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Alle bisauf die letzte Periode besitzen ein "moves"-Node, außer sie
-                    sind vom @type='string'.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:assert>
+        <xs:assert
+            test="every $i in 1 to count(period)-1 satisfies (period[$i]/moves or period[$i]/@type eq 'string')"
+            xerces:message="Every period except the last one must contain a 'move' node or must have Attribute @type='string' set." />
     </xs:complexType>
 
     <xs:complexType name="period-string">
@@ -61,7 +51,7 @@
 
     <xs:complexType name="period-complex">
         <xs:sequence>
-            <xs:element name="moves" minOccurs="0" type="xs:positiveInteger" />
+            <xs:element name="moves" type="xs:positiveInteger" minOccurs="0" />
             <xs:element name="time" type="simple-time" />
             <xs:element name="increment" type="simple-time" minOccurs="0" />
         </xs:sequence>
