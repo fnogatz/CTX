@@ -14,4 +14,7 @@
             test="true()"
             type="time-controls-complex" />
     </xs:element>
+
+    <xs:element name="location" type="location" />
+    <xs:element name="address" type="address" />
 </xs:schema>

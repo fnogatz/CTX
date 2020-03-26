@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
+    <xs:include schemaLocation="address.xsd" />
+
+    <xs:complexType name="location">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" />
+
+            <xs:element name="address" type="address" minOccurs="0" />
+
+            <xs:element name="phone" type="xs:string" minOccurs="0" />
+
+            <xs:element name="information" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="catering" type="xs:boolean" minOccurs="0" />
+                        <xs:element name="disabled-friendly" type="xs:boolean" minOccurs="0" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

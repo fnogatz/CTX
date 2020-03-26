@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
+    <xs:complexType name="address">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" minOccurs="0" />
+            <xs:element name="street" type="xs:string" />
+            <xs:element name="zip" type="xs:string" minOccurs="0" />
+            <xs:element name="city" type="xs:string" />
+
+            <!-- TODO: This could be some country code -->
+            <xs:element name="country" type="xs:string" minOccurs="0" />
+
+            <xs:element name="coordinates" type="coordinates" minOccurs="0">
+                <xs:alternative test="(@type = 'WGS84' or (count(@type) eq 0))" type="coordinates-WGS84" />
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="coordinates">
+        <xs:attribute name="type" default="WGS84">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="WGS84" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="coordinates-WGS84">
+        <xs:complexContent>
+            <xs:extension base="coordinates">
+                <xs:all>
+                    <xs:element name="lon">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:decimal">
+                                <xs:minInclusive value="-180" />
+                                <xs:maxInclusive value="180" />
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="lat">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:decimal">
+                                <xs:minInclusive value="-90" />
+                                <xs:maxInclusive value="90" />
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                </xs:all>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>
