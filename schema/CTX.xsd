@@ -378,23 +378,27 @@
             </xs:simpleType>
         </xs:attribute>
 
-        <xs:assert test="every $p in players/player/birth-year satisfies (xs:int($p) le xs:int(year-from-date(information/date/start)))" xerces:message="Every player's birth year must be before the tournament's starting date.">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Bedingung (XSD1.1): Geburtsjahr jedes Spielers
-                    muss vor Turnierstart liegen.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:assert>
+        <xs:assert
+            test="
+                if (count(information/start) eq 1) then (
+                    every $p in players/player/birth-year satisfies (
+                        xs:int($p) le xs:int(year-from-date(information/start))
+                    )
+                ) else (
+                    every $p in players/player/birth-year satisfies (
+                        xs:int($p) le xs:int(year-from-date(information/date))
+                    )
+                )"
+            xerces:message="Every player's birth year must be before the tournament's starting date." />
 
-        <xs:assert test="every $p in players/player/birth satisfies ($p lt information/date/start)" xerces:message="Every player's birth must be before the tournament's starting date.">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Bedingung (XSD1.1): Geburtstag jedes Spielers
-                    muss vor Turnierstart liegen.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:assert>
+        <xs:assert
+            test="
+                if (count(information/start) eq 1) then (
+                    every $p in players/player/birth satisfies ($p lt information/start)
+                ) else (
+                    every $p in players/player/birth satisfies ($p lt information/date)
+                )"
+            xerces:message="Every player's birth must be before the tournament's starting date." />
 
         <xs:assert test="every $date in pairings//information/date satisfies ($date le information/date/end)" xerces:message="Round date must be before tournament's ending date.">
             <xs:annotation>
