@@ -12,7 +12,7 @@
     <xs:include schemaLocation="ISO3166-Country-Code/ISO3166-Country-Code.xsd" />
     <xs:include schemaLocation="IOC-Country-Code.xsd" />
 
-    <xs:include schemaLocation="types.xsd" />
+    <xs:include schemaLocation="types/time-controls.xsd" />
 
     <xs:element name="tournament" type="tournament">
         <xs:annotation>
