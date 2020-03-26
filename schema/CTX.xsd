@@ -1340,10 +1340,7 @@
                                                             </xs:complexType>
                                                         </xs:element>
 
-                                                        <xs:element name="club" type="identifier-club">
-                                                            <xs:alternative test="@federation and (@federation eq 'GER' or @federation eq 'DE')" type="_t_team-identifier-club_GER" />
-                                                            <xs:alternative test="true()" type="_t_team-identifier-club" />
-                                                        </xs:element>
+                                                        <xs:element name="club" type="_t_team-identifier-club" />
                                                     </xs:choice>
                                                 </xs:complexType>
                                             </xs:element>
@@ -5740,16 +5737,6 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:complexType name="_t_team-identifier-club_GER">
-        <xs:complexContent>
-            <xs:extension base="_t_team-identifier-club_abstract">
-                <xs:sequence>
-                    <xs:element name="id" type="club-id_GER" minOccurs="0" />
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
     <xs:simpleType name="_s_pairing-constraints-selectable-fields">
         <xs:restriction base="xs:string">
             <xs:enumeration value="player/identifiers/club" />
@@ -5759,18 +5746,6 @@
     <xs:simpleType name="_t_pairing-constraints-selectable-fields">
         <xs:restriction base="xs:string">
             <xs:enumeration value="team/identifiers/club" />
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:simpleType name="club-id_GER">
-        <xs:restriction base="xs:string">
-            <xs:pattern value="[0-9A-IK][0-9A-F]{2}[0-9]{2}" />
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:simpleType name="member-id_GER">
-        <xs:restriction base="xs:nonNegativeInteger">
-            <xs:maxExclusive value="10000" />
         </xs:restriction>
     </xs:simpleType>
 
