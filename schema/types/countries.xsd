@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
+    <xs:include schemaLocation="../ISO3166-Country-Code/ISO3166-Country-Code.xsd" />
+    <xs:include schemaLocation="../IOC-Country-Code.xsd" />
+
+    <xs:simpleType name="country-code">
+        <xs:union memberTypes="IOC-Country-Code ISO3166-Country-Code special-federation-code" />
+    </xs:simpleType>
+
+    <xs:simpleType name="special-federation-code">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="IBCA">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        International Braille Chess Association
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="ICSC">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        International Committee of Silent Chess
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="IPCA">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        International Physically Disabled Chess Association
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

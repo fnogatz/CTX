@@ -4,6 +4,7 @@
 
     <xs:element name="tournament-information" type="tournament-information" />
     <xs:element name="tournament-name" type="tournament-name" />
+    <xs:element name="arbiters" type="arbiters-sequence" />
 
     <xs:element name="simple-time" type="simple-time" />
     <xs:element name="time-controls" type="xs:anyType">
@@ -17,4 +18,7 @@
 
     <xs:element name="location" type="location" />
     <xs:element name="address" type="address" />
+
+    <xs:element name="person-identifiers" type="person-identifiers" />
+
 </xs:schema>

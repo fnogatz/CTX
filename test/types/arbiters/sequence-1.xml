@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<arbiters>
+    <arbiter id="1">
+        <name type="string">Mary</name>
+    </arbiter>
+    <arbiter id="2">
+        <name type="string">Paul</name>
+    </arbiter>
+</arbiters>

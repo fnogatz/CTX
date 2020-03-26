@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
-    <xs:include schemaLocation="location.xsd" />
+    <xs:include schemaLocation="locations.xsd" />
     <xs:include schemaLocation="time-controls.xsd" />
     <xs:include schemaLocation="arbiters.xsd" />
 
