@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
+    <xs:include schemaLocation="person.xsd" />
+
+    <xs:complexType name="arbiter">
+        <xs:complexContent>
+            <xs:extension base="person">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Additional information of arbiters
+                    </xs:documentation>
+                </xs:annotation>
+
+                <xs:sequence>
+                    <xs:element name="license" minOccurs="0" type="arbiter-license">
+                        <xs:alternative test="@federation = 'FIDE'" type="arbiter-license-federation-FIDE" />
+                        <xs:alternative test="@federation = 'GER' or @federation = 'DE'" type="arbiter-license-federation-GER" />
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="role" type="arbiter-role" />
+                <xs:attribute name="id" type="xs:positiveInteger" use="required" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="arbiters-sequence">
+        <xs:sequence>
+            <xs:element name="arbiter" type="arbiter" maxOccurs="unbounded" />
+        </xs:sequence>
+
+        <xs:assert
+            test="every $i in 1 to count(arbiter) satisfies (arbiter[$i]/@id = $i)"
+            xerces:message="Arbiters must be serially numbered, beginning with 1." />
+
+        <xs:assert
+            test="
+                every $i in 1 to count(arbiter)-1 satisfies (
+                    if (arbiter[$i]/name/@type eq 'string') then (
+                        if (arbiter[$i+1]/name/@type eq 'string') then (
+                            compare(
+                                lower-case(arbiter[$i]/name),
+                                lower-case(arbiter[$i+1]/name)
+                            ) le 0
+                        ) else (
+                            compare(
+                                lower-case(arbiter[$i]/name),
+                                lower-case(concat(arbiter[$i+1]/name/surname, ',', arbiter[$i+1]/name/prename, ',', arbiter[$i+1]/name/academic-title))
+                            ) le 0
+                        )
+                    ) else (
+                        if (arbiter[$i+1]/name/@type eq 'string') then (
+                            compare(
+                                lower-case(concat(arbiter[$i]/name/surname, ',', arbiter[$i]/name/prename, ',', arbiter[$i]/name/academic-title)),
+                                lower-case(arbiter[$i+1]/name)
+                            ) le 0
+                        ) else (
+                            compare(
+                                lower-case(concat(arbiter[$i]/name/surname, ',', arbiter[$i]/name/prename, ',', arbiter[$i]/name/academic-title)),
+                                lower-case(concat(arbiter[$i+1]/name/surname, ',', arbiter[$i+1]/name/prename, ',', arbiter[$i+1]/name/academic-title))
+                            ) le 0
+                        )
+                    )
+                )
+            " 
+            xerces:message="Arbiters must be sorted by their name.">
+            <xs:annotation>
+                <xs:documentation xml:lang="de">
+                    Note: the sort order depends on the collation, i.e.,
+                    by default 'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:assert>
+    </xs:complexType>
+</xs:schema>

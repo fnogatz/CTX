@@ -2,6 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
     <xs:include schemaLocation="location.xsd" />
     <xs:include schemaLocation="time-controls.xsd" />
+    <xs:include schemaLocation="arbiters.xsd" />
 
     <xs:complexType name="tournament-information">
         <xs:sequence>
@@ -29,21 +30,21 @@
 
             <xs:element name="arbiters" type="xs:anyType" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Alle Schiedsrichter, insbesondere auch bei Ligen.
-                        Erlaubt zwei Typen:
-                            * arbiters-complex: Angabe als komplexer Typ
-                            * (compat-mode) arbiters-string: Angabe als String 
-                                -- nur wenn type-Attribut gesetzt und gleich "string" ist
+                    <xs:documentation xml:lang="en">
+                        All arbiters, in particular match arbiters.
+                        Supports two types:
+                            * arbiters-sequence: specify data as complex type
+                            * (compat-mode) comnpat-string: specify data as free text 
+                                -- only if @type is set to "string"
                     </xs:documentation>
                 </xs:annotation>
 
                 <xs:alternative
                     test="@type and @type eq 'string'"
-                    type="arbiters-string" />
+                    type="compat-string" />
                 <xs:alternative
                     test="true()"
-                    type="arbiters-complex" />
+                    type="arbiters-sequence" />
             </xs:element>
 
             <xs:element name="rating-versions" minOccurs="0">
