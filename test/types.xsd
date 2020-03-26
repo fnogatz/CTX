@@ -2,10 +2,16 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:include schemaLocation="../schema/CTX.xsd" />
 
-    <xs:element name="simple-time" type="simple-time" />
+    <xs:element name="tournament-information" type="tournament-information" />
+    <xs:element name="tournament-name" type="tournament-name" />
 
+    <xs:element name="simple-time" type="simple-time" />
     <xs:element name="time-controls" type="xs:anyType">
-        <xs:alternative test="if (count(@type) eq 1) then (@type eq 'string') else false()" type="time-controls-string" />
-        <xs:alternative test="true()" type="time-controls-complex" />
+        <xs:alternative
+            test="if (count(@type) eq 1) then (@type eq 'string') else false()"
+            type="time-controls-string" />
+        <xs:alternative
+            test="true()"
+            type="time-controls-complex" />
     </xs:element>
 </xs:schema>

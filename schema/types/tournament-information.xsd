@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
+    <xs:include schemaLocation="time-controls.xsd" />
+
+    <xs:complexType name="tournament-information">
+        <xs:sequence>
+            <xs:element name="name" type="tournament-name" />
+            <xs:element name="description" type="xs:string" minOccurs="0" />
+
+            <xs:choice>
+                <xs:element name="date" type="xs:date" />
+                <xs:sequence>
+                    <xs:element name="start" type="xs:date" />
+                    <xs:element name="end" type="xs:date" />
+                </xs:sequence>
+            </xs:choice>
+
+            <xs:element name="location" type="location" minOccurs="0" />
+
+            <xs:element name="time-controls" type="xs:anyType" minOccurs="0">
+                <xs:alternative
+                    test="if (count(@type) eq 1) then (@type eq 'string') else false()"
+                    type="time-controls-string" />
+                <xs:alternative
+                    test="true()"
+                    type="time-controls-complex" />
+            </xs:element>
+
+            <xs:element name="arbiters" type="xs:anyType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="de">
+                        Alle Schiedsrichter, insbesondere auch bei Ligen.
+                        Erlaubt zwei Typen:
+                            * arbiters-complex: Angabe als komplexer Typ
+                            * (deprecated) arbiters-string: Angabe als String 
+                                -- nur wenn type-Attribut gesetzt und gleich "string" ist
+                    </xs:documentation>
+                </xs:annotation>
+
+                <xs:alternative
+                    test="@type and @type eq 'string'"
+                    type="arbiters-string" />
+                <xs:alternative
+                    test="true()"
+                    type="arbiters-complex" />
+            </xs:element>
+
+            <xs:element name="rating-versions" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="rating" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:date">
+                                        <xs:attribute name="type" type="rating-system" use="optional" default="" />
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+
+                <xs:unique name="unique-rating-version">
+                    <xs:selector xpath="rating" />
+                    <xs:field xpath="@type" />
+                </xs:unique>
+            </xs:element>
+        </xs:sequence>
+
+        <xs:assert
+            test="if (count(date) eq 0) then (start lt end) else (true())"
+            xerces:message="Start date must be before end date" />
+    </xs:complexType>
+
+    <xs:complexType name="tournament-name">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="abbreviation" type="xs:string" use="optional" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+</xs:schema>

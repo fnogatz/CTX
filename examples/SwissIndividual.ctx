@@ -2,10 +2,7 @@
 <tournament type="individual">
     <information>
         <name>Test Tournament with a very long title</name>
-        <date>
-            <start>2013-05-18</start>
-            <end>2013-05-26</end>
-        </date>
+        <date>2013-05-18</date>
         <location>
             <name>Los Angeles</name>
         </location>

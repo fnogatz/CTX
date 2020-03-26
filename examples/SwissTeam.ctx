@@ -2,10 +2,8 @@
 <tournament type="team">
     <information>
         <name>Test Tournament Team with a long title</name>
-        <date>
-            <start>2010-11-16</start>
-            <end>2010-11-21</end>
-        </date>
+        <start>2010-11-16</start>
+        <end>2010-11-21</end>
         <location>
             <name>Los Angeles</name>
         </location>

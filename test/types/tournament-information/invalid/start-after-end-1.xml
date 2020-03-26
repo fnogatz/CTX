@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<tournament-information>
+    <name>Club Championship</name>
+
+    <!-- invalid as start is after end -->
+    <start>1993-05-24</start>
+    <end>1990-01-24</end>
+</tournament-information>

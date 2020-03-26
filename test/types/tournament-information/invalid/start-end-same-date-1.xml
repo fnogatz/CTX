@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<tournament-information>
+    <name>Club Championship</name>
+
+    <!-- invalid as start is identical to end -->
+    <start>2019-08-23</start>
+    <end>2019-08-23</end>
+</tournament-information>
