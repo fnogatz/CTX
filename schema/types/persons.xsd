@@ -85,7 +85,21 @@
                         
                         <xs:element name="phone" type="phone" minOccurs="0" maxOccurs="unbounded" />
 
-                        <xs:element name="mail" type="mail" minOccurs="0" maxOccurs="unbounded" />
+                        <xs:element name="mail" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="mail-entity">
+                                        <xs:attribute name="description" type="xs:string">
+                                            <xs:annotation>
+                                                <xs:documentation xml:lang="de">
+                                                    Bemerkung/Beschreibung zur Mail-Adresse.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:attribute>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
                     </xs:sequence>
 
                     <xs:assert test="count(*) ge 0" xerces:message="'contact' node must not be empty.">
@@ -156,4 +170,16 @@
             <xs:element name="club" type="player-identifier-club" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
     </xs:complexType>
+
+    <xs:simpleType name="mail-entity">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Format of a valid mail address
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

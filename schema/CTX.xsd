@@ -25,39 +25,16 @@
         <xs:alternative test="@type = 'individual'" type="tournament-single" />
 
         <xs:key name="player-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="en">
-                    Index of all player-ids in /tournament/players/player/@id
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="players/player" />
             <xs:field xpath="@id" />
         </xs:key>
 
         <xs:keyref name="player-id-keyref" refer="player-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Keyref: Die in /tournament/teams/team/players/player genannte @id muss 
-                    ein player-id-key sein. Erübrigt sich bei Einzelturnieren.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="teams/team/players/player" />
             <xs:field xpath="@id" />
         </xs:keyref>
 
-        <xs:keyref name="_s_player-pairing-keyref" refer="player-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Keyref: Die in
-                    /tournament/pairings/round/boards/board/{white,black},
-                    /tournament/pairings/round/boards/board/player,
-                    /tournament/pairings/round/boards/board/games/game/{white,black}
-                    genannte @player ID muss ein player-id-key sein. Erübrigt sich bei Mannschaftsturnieren.
-                </xs:documentation>
-            </xs:annotation>
-
+        <xs:keyref refer="player-id-key" name="_s_player-pairing-keyref">
             <xs:selector xpath="pairings/round/boards/board/white
                                 | pairings/round/boards/board/black
                                 | pairings/round/boards/board/player
@@ -72,26 +49,12 @@
             <xs:field xpath="@player | @id" />
         </xs:keyref>
 
-        <xs:keyref name="_s_player-rankings-initial-keyref" refer="player-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Keyref: Die in /tournament/rankings/initial/player genannte @id muss ein 
-                    player-id-key sein. Erübrigt sich bei Mannschaftsturnieren.
-                </xs:documentation>
-            </xs:annotation>
-
+        <xs:keyref refer="player-id-key" name="_s_player-rankings-initial-keyref">
             <xs:selector xpath="rankings/initial/player" />
             <xs:field xpath="@id" />
         </xs:keyref>
 
-        <xs:keyref name="_t_player-pairing-keyref" refer="player-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Keyref: Die in /tournament/pairings/round/tables/table/boards/board/{white,black}
-                    genannte @player ID muss ein player-id-key sein. Erübrigt sich bei Einzelturnieren.
-                </xs:documentation>
-            </xs:annotation>
-
+        <xs:keyref refer="player-id-key" name="_t_player-pairing-keyref">
             <xs:selector xpath="pairings/round/tables/table/boards/board/white
                                 | pairings/round/tables/table/boards/board/black
                                 | pairings/round/tables/table/boards/board/player
@@ -106,85 +69,41 @@
             <xs:field xpath="@player | @id" />
         </xs:keyref>
 
-        <xs:keyref name="_s_settings-pairings-constraints-player-keyref" refer="player-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Keyref: Die in /tournament/settings/pairings/constraints/players/player
-                    genannte @id muss ein player-id-key sein.
-                </xs:documentation>
-            </xs:annotation>
-
+        <xs:keyref refer="player-id-key" name="_s_settings-pairings-constraints-player-keyref">
             <xs:selector xpath="settings/pairings/constraints/players/player" />
             <xs:field xpath="@id" />
         </xs:keyref>
 
         <xs:unique name="unique-player-fide-id">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die /tournament/players/player/identifiers/fide/id muss eindeutig sein.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="players/player/identifiers/fide" />
             <xs:field xpath="id" />
         </xs:unique>
 
         <xs:unique name="unique-player-federation-id">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die in /tournament/players/player/identifiers/federation 
-                    genannte (@code, id) Kombination muss eindeutig sein.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="players/player/identifiers/federation" />
+
             <xs:field xpath="@code" />
             <xs:field xpath="id" />
         </xs:unique>
 
         <xs:unique name="unique-player-club-id-member">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die in /tournament/players/player/identifiers/club
-                    geführten Tripel (@federation, id, member-id)
-                    müssen eindeutig sein.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="players/player/identifiers/club" />
+
             <xs:field xpath="@federation" />
             <xs:field xpath="id" />
             <xs:field xpath="member-id" />
         </xs:unique>
 
         <xs:unique name="unique-team-federation-team-number">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die in /tournament/teams/team/identifiers/federation
-                    geführten Paare (@code, team-number)
-                    müssen eindeutig sein.
-                    Die Landesauswahlen müssen also unterschiedlich nummeriert
-                    sein.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="teams/team/identifiers/federation" />
+
             <xs:field xpath="@code" />
             <xs:field xpath="team-number" />
         </xs:unique>
 
         <xs:unique name="unique-team-club-team-number">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Die in /tournament/teams/team/identifiers/club
-                    geführten Paare (name, team-number)
-                    müssen eindeutig sein.
-                    Mehrere Mannschaften eines Vereins müssen also 
-                    unterschiedlich nummeriert sein.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="teams/team/identifiers/club" />
+
             <xs:field xpath="name" />
             <xs:field xpath="team-number" />
         </xs:unique>
@@ -195,36 +114,16 @@
         </xs:key>
 
         <xs:keyref name="_t_team-rankings-initial-keyref" refer="team-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    [Mannschaftsturnier]
-                    Keyref: Die in /tournament/rankings/initial/team genannte @id muss ein 
-                    team-id-key sein. Erübrigt sich bei Einzelturnieren.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="rankings/initial/team" />
             <xs:field xpath="@id" />
         </xs:keyref>
 
         <xs:key name="round-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Index über die Rundennummern in /tournament/pairings/round/@number
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="pairings/round" />
             <xs:field xpath="@number" />
         </xs:key>
 
         <xs:key name="inning-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Index über die Durchgänge in /tournament/pairings/inning/@number
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="pairings/inning" />
             <xs:field xpath="@number" />
         </xs:key>
@@ -249,13 +148,6 @@
         </xs:keyref>
 
         <xs:keyref name="_t_team-pairing-keyref" refer="team-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Keyref: Die in /tournament/pairings//round/tables/table/team 
-                    genannte @id muss ein team-id-key sein. Erübrigt sich bei Einzelturnieren.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="pairings/round/tables/table/team
                                 | pairings/inning/rounds/round/tables/table/team
                                 " />
@@ -263,13 +155,6 @@
         </xs:keyref>
 
         <xs:keyref name="_t_team-pairing-boards-keyref" refer="team-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Keyref: Die in /tournament/pairings//round/tables/table/boards/board/{white,black,player}/@team
-                    genannte Team-ID muss ein team-id-key sein. Erübrigt sich bei Einzelturnieren.
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="pairings/round/tables/table/boards/board/white 
                                 | pairings/round/tables/table/boards/board/black
                                 | pairings/round/tables/table/boards/board/player
@@ -281,12 +166,6 @@
         </xs:keyref>
 
         <xs:key name="arbiter-id-key">
-            <xs:annotation>
-                <xs:documentation xml:lang="de">
-                    Index über die Schiedsrichter-IDs in /tournament/information/arbiters/arbiter/@id
-                </xs:documentation>
-            </xs:annotation>
-
             <xs:selector xpath="information/arbiters/arbiter" />
             <xs:field xpath="@id" />
         </xs:key>
@@ -310,12 +189,6 @@
             </xs:element>
 
             <xs:element name="players" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Liste aller Spieler.
-                    </xs:documentation>
-                </xs:annotation>
-
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="player" type="player" maxOccurs="unbounded" />
@@ -602,9 +475,10 @@
                             count(distinct-values(data((players/player | teams/team)/identifiers/club[@federation eq $federation and xs:string(id) eq xs:string($id)]/name))) eq 1
                         )"
             xerces:message="Clubs of the same club/@federation with the identical club/id must also have the same club/name." />
-        <xs:assert test="every $club_name in distinct-values(data((players/player | teams/team)/identifiers/club/name)) satisfies (
-                                count(distinct-values(data((players/player | teams/team)/identifiers/club[xs:string(name) eq xs:string($club_name)]/@federation))) le 1
-                            )" xerces:message="Clubs with the same club/name must also have the identical club/@federation if set. Keep in mind that the Club-Name is an distinct key. If you have clubs of different federations with the same name, you have to suffix them.">
+        <xs:assert
+            test="every $club_name in distinct-values(data((players/player | teams/team)/identifiers/club/name)) satisfies (
+                                count(distinct-values(data((players/player | teams/team)/identifiers/club[xs:string(name) eq xs:string($club_name)]/@federation))) le 1)"
+            xerces:message="Clubs with the same club/name must also have the identical club/@federation if set. Keep in mind that the Club-Name is an distinct key. If you have clubs of different federations with the same name, you have to suffix them.">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Der Vereinsname ist ein Schlüssel. Vereine mit dem
@@ -617,9 +491,10 @@
             </xs:annotation>
         </xs:assert>
 
-        <xs:assert test="every $club_name in distinct-values(data((players/player | teams/team)/identifiers/club/name)) satisfies (
-                                count(distinct-values(data((players/player | teams/team)/identifiers/club[xs:string(name) eq xs:string($club_name)]/id))) le 1
-                            )" xerces:message="Clubs with the same club/name must also have the identical club/id if set. Keep in mind that the Club-Name is an distinct key. If you have clubs with different IDs but the same name, you have to suffix them.">
+        <xs:assert
+            test="every $club_name in distinct-values(data((players/player | teams/team)/identifiers/club/name)) satisfies (
+                                count(distinct-values(data((players/player | teams/team)/identifiers/club[xs:string(name) eq xs:string($club_name)]/id))) le 1)"
+            xerces:message="Clubs with the same club/name must also have the identical club/id if set. Keep in mind that the Club-Name is an distinct key. If you have clubs with different IDs but the same name, you have to suffix them.">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Der Vereinsname ist ein Schlüssel. Vereine mit dem
@@ -738,23 +613,8 @@
                                 <xs:element name="general">
                                     <xs:complexType>
                                         <xs:all>
-                                            <xs:element name="rounds" type="xs:positiveInteger">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Anzahl der Runden.
-                                                        Pflichtangabe.
-                                                    </xs:documentation>
-                                                </xs:annotation>
-                                            </xs:element>
-
-                                            <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Partien pro Runde.
-                                                        Optional. Implizit 1.
-                                                    </xs:documentation>
-                                                </xs:annotation>
-                                            </xs:element>
+                                            <xs:element name="rounds" type="xs:positiveInteger" />
+                                            <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0" default="1" />
                                         </xs:all>
                                     </xs:complexType>
                                 </xs:element>
@@ -2267,32 +2127,6 @@
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
                             Bemerkung/Beschreibung zur Telefonnummer, etwa "dienstlich".
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:attribute>
-            </xs:extension>
-        </xs:simpleContent>
-    </xs:complexType>
-
-    <xs:simpleType name="mail-entity">
-        <xs:annotation>
-            <xs:documentation xml:lang="de">
-                Gültige E-Mail-Adresse (Regex-Pattern).
-            </xs:documentation>
-        </xs:annotation>
-
-        <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:complexType name="mail">
-        <xs:simpleContent>
-            <xs:extension base="mail-entity">
-                <xs:attribute name="description" type="xs:string">
-                    <xs:annotation>
-                        <xs:documentation xml:lang="de">
-                            Bemerkung/Beschreibung zur Mail-Adresse.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
