@@ -33,8 +33,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2073</rating>
                 <rating type="DWZ">2088</rating>
+                <rating type="Elo">2073</rating>
             </ratings>
         </player>
         <player id="2">
@@ -51,8 +51,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2183</rating>
                 <rating type="DWZ">2143</rating>
+                <rating type="Elo">2183</rating>
             </ratings>
         </player>
         <player id="3">
@@ -70,8 +70,8 @@
             </identifiers>
             <title>FM</title>
             <ratings>
-                <rating type="Elo">2392</rating>
                 <rating type="DWZ">2384</rating>
+                <rating type="Elo">2392</rating>
             </ratings>
         </player>
         <player id="4">
@@ -88,8 +88,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2078</rating>
                 <rating type="DWZ">2011</rating>
+                <rating type="Elo">2078</rating>
             </ratings>
         </player>
         <player id="5">
@@ -111,8 +111,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">2064</rating>
                 <rating type="DWZ">2044</rating>
+                <rating type="Elo">2064</rating>
             </ratings>
         </player>
         <player id="6">
@@ -129,8 +129,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1892</rating>
                 <rating type="DWZ">1942</rating>
+                <rating type="Elo">1892</rating>
             </ratings>
         </player>
         <player id="7">
@@ -166,8 +166,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">1683</rating>
                 <rating type="DWZ">1586</rating>
+                <rating type="Elo">1683</rating>
             </ratings>
         </player>
         <player id="9">
@@ -184,8 +184,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1859</rating>
                 <rating type="DWZ">2046</rating>
+                <rating type="Elo">1859</rating>
             </ratings>
         </player>
         <player id="10">
@@ -202,8 +202,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1796</rating>
                 <rating type="DWZ">1936</rating>
+                <rating type="Elo">1796</rating>
             </ratings>
         </player>
         <player id="11">
@@ -220,8 +220,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1926</rating>
                 <rating type="DWZ">1841</rating>
+                <rating type="Elo">1926</rating>
             </ratings>
         </player>
         <player id="12">
@@ -238,8 +238,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1924</rating>
                 <rating type="DWZ">1898</rating>
+                <rating type="Elo">1924</rating>
             </ratings>
         </player>
         <player id="13">
@@ -256,8 +256,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1739</rating>
                 <rating type="DWZ">1513</rating>
+                <rating type="Elo">1739</rating>
             </ratings>
         </player>
         <player id="14">
@@ -274,8 +274,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1637</rating>
                 <rating type="DWZ">1599</rating>
+                <rating type="Elo">1637</rating>
             </ratings>
         </player>
         <player id="15">
@@ -292,8 +292,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2092</rating>
                 <rating type="DWZ">2065</rating>
+                <rating type="Elo">2092</rating>
             </ratings>
         </player>
         <player id="16">
@@ -310,8 +310,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1755</rating>
                 <rating type="DWZ">1838</rating>
+                <rating type="Elo">1755</rating>
             </ratings>
         </player>
         <player id="17">
@@ -342,8 +342,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1992</rating>
                 <rating type="DWZ">2089</rating>
+                <rating type="Elo">1992</rating>
             </ratings>
         </player>
         <player id="19">
@@ -379,8 +379,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">2207</rating>
                 <rating type="DWZ">2215</rating>
+                <rating type="Elo">2207</rating>
             </ratings>
         </player>
         <player id="21">
@@ -397,8 +397,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1952</rating>
                 <rating type="DWZ">2068</rating>
+                <rating type="Elo">1952</rating>
             </ratings>
         </player>
         <player id="22">
@@ -416,8 +416,8 @@
             </identifiers>
             <title>FM</title>
             <ratings>
-                <rating type="Elo">2311</rating>
                 <rating type="DWZ">2279</rating>
+                <rating type="Elo">2311</rating>
             </ratings>
         </player>
         <player id="23">
@@ -434,8 +434,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1768</rating>
                 <rating type="DWZ">1716</rating>
+                <rating type="Elo">1768</rating>
             </ratings>
         </player>
         <player id="24">
@@ -452,8 +452,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1879</rating>
                 <rating type="DWZ">1870</rating>
+                <rating type="Elo">1879</rating>
             </ratings>
         </player>
         <player id="25">
@@ -471,8 +471,8 @@
             </identifiers>
             <title>FM</title>
             <ratings>
-                <rating type="Elo">2298</rating>
                 <rating type="DWZ">2275</rating>
+                <rating type="Elo">2298</rating>
             </ratings>
         </player>
         <player id="26">
@@ -492,8 +492,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">2023</rating>
                 <rating type="DWZ">1989</rating>
+                <rating type="Elo">2023</rating>
             </ratings>
         </player>
         <player id="27">
@@ -515,8 +515,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">1865</rating>
                 <rating type="DWZ">1832</rating>
+                <rating type="Elo">1865</rating>
             </ratings>
         </player>
         <player id="28">
@@ -547,8 +547,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2000</rating>
                 <rating type="DWZ">2030</rating>
+                <rating type="Elo">2000</rating>
             </ratings>
         </player>
         <player id="30">
@@ -565,8 +565,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2055</rating>
                 <rating type="DWZ">2063</rating>
+                <rating type="Elo">2055</rating>
             </ratings>
         </player>
         <player id="31">
@@ -583,8 +583,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1870</rating>
                 <rating type="DWZ">1821</rating>
+                <rating type="Elo">1870</rating>
             </ratings>
         </player>
         <player id="32">
@@ -601,8 +601,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2123</rating>
                 <rating type="DWZ">2134</rating>
+                <rating type="Elo">2123</rating>
             </ratings>
         </player>
         <player id="33">
@@ -619,8 +619,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2204</rating>
                 <rating type="DWZ">2193</rating>
+                <rating type="Elo">2204</rating>
             </ratings>
         </player>
         <player id="34">
@@ -637,8 +637,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2105</rating>
                 <rating type="DWZ">2130</rating>
+                <rating type="Elo">2105</rating>
             </ratings>
         </player>
         <player id="35">
@@ -673,8 +673,8 @@
             </identifiers>
             <title>FM</title>
             <ratings>
-                <rating type="Elo">2364</rating>
                 <rating type="DWZ">2291</rating>
+                <rating type="Elo">2364</rating>
             </ratings>
         </player>
         <player id="37">
@@ -691,8 +691,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2045</rating>
                 <rating type="DWZ">1987</rating>
+                <rating type="Elo">2045</rating>
             </ratings>
         </player>
         <player id="38">
@@ -709,8 +709,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1748</rating>
                 <rating type="DWZ">1790</rating>
+                <rating type="Elo">1748</rating>
             </ratings>
         </player>
         <player id="39">
@@ -727,8 +727,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1850</rating>
                 <rating type="DWZ">1884</rating>
+                <rating type="Elo">1850</rating>
             </ratings>
         </player>
         <player id="40">
@@ -745,8 +745,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2004</rating>
                 <rating type="DWZ">1929</rating>
+                <rating type="Elo">2004</rating>
             </ratings>
         </player>
         <player id="41">
@@ -763,8 +763,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2170</rating>
                 <rating type="DWZ">2152</rating>
+                <rating type="Elo">2170</rating>
             </ratings>
         </player>
         <player id="42">
@@ -781,8 +781,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2217</rating>
                 <rating type="DWZ">2209</rating>
+                <rating type="Elo">2217</rating>
             </ratings>
         </player>
         <player id="43">
@@ -799,8 +799,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1803</rating>
                 <rating type="DWZ">1559</rating>
+                <rating type="Elo">1803</rating>
             </ratings>
         </player>
         <player id="44">
@@ -817,8 +817,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1895</rating>
                 <rating type="DWZ">1927</rating>
+                <rating type="Elo">1895</rating>
             </ratings>
         </player>
         <player id="45">
@@ -835,8 +835,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1935</rating>
                 <rating type="DWZ">1899</rating>
+                <rating type="Elo">1935</rating>
             </ratings>
         </player>
         <player id="46">
@@ -858,8 +858,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">1770</rating>
                 <rating type="DWZ">1757</rating>
+                <rating type="Elo">1770</rating>
             </ratings>
         </player>
         <player id="47">
@@ -876,8 +876,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2173</rating>
                 <rating type="DWZ">2170</rating>
+                <rating type="Elo">2173</rating>
             </ratings>
         </player>
         <player id="48">
@@ -894,8 +894,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1907</rating>
                 <rating type="DWZ">1824</rating>
+                <rating type="Elo">1907</rating>
             </ratings>
         </player>
         <player id="49">
@@ -912,8 +912,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2248</rating>
                 <rating type="DWZ">2232</rating>
+                <rating type="Elo">2248</rating>
             </ratings>
         </player>
         <player id="50">
@@ -930,8 +930,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1984</rating>
                 <rating type="DWZ">1995</rating>
+                <rating type="Elo">1984</rating>
             </ratings>
         </player>
         <player id="51">
@@ -948,8 +948,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2228</rating>
                 <rating type="DWZ">2200</rating>
+                <rating type="Elo">2228</rating>
             </ratings>
         </player>
         <player id="52">
@@ -966,8 +966,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1885</rating>
                 <rating type="DWZ">1973</rating>
+                <rating type="Elo">1885</rating>
             </ratings>
         </player>
         <player id="53">
@@ -984,8 +984,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2108</rating>
                 <rating type="DWZ">2140</rating>
+                <rating type="Elo">2108</rating>
             </ratings>
         </player>
         <player id="54">
@@ -1002,8 +1002,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1804</rating>
                 <rating type="DWZ">1645</rating>
+                <rating type="Elo">1804</rating>
             </ratings>
         </player>
         <player id="55">
@@ -1020,8 +1020,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2139</rating>
                 <rating type="DWZ">2132</rating>
+                <rating type="Elo">2139</rating>
             </ratings>
         </player>
         <player id="56">
@@ -1038,8 +1038,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1835</rating>
                 <rating type="DWZ">1966</rating>
+                <rating type="Elo">1835</rating>
             </ratings>
         </player>
         <player id="57">
@@ -1056,8 +1056,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1610</rating>
                 <rating type="DWZ">1872</rating>
+                <rating type="Elo">1610</rating>
             </ratings>
         </player>
         <player id="58">
@@ -1074,8 +1074,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1793</rating>
                 <rating type="DWZ">1786</rating>
+                <rating type="Elo">1793</rating>
             </ratings>
         </player>
         <player id="59">
@@ -1095,8 +1095,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">2367</rating>
                 <rating type="DWZ">2343</rating>
+                <rating type="Elo">2367</rating>
             </ratings>
         </player>
         <player id="60">
@@ -1113,8 +1113,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1868</rating>
                 <rating type="DWZ">1951</rating>
+                <rating type="Elo">1868</rating>
             </ratings>
         </player>
         <player id="61">
@@ -1159,8 +1159,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1959</rating>
                 <rating type="DWZ">1991</rating>
+                <rating type="Elo">1959</rating>
             </ratings>
         </player>
         <player id="64">
@@ -1177,8 +1177,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1542</rating>
                 <rating type="DWZ">1451</rating>
+                <rating type="Elo">1542</rating>
             </ratings>
         </player>
         <player id="65">
@@ -1212,8 +1212,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">1821</rating>
                 <rating type="DWZ">1344</rating>
+                <rating type="Elo">1821</rating>
             </ratings>
         </player>
         <player id="67">
@@ -1230,8 +1230,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1906</rating>
                 <rating type="DWZ">1892</rating>
+                <rating type="Elo">1906</rating>
             </ratings>
         </player>
         <player id="68">
@@ -1262,8 +1262,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2149</rating>
                 <rating type="DWZ">2132</rating>
+                <rating type="Elo">2149</rating>
             </ratings>
         </player>
         <player id="70">
@@ -1280,8 +1280,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2080</rating>
                 <rating type="DWZ">2103</rating>
+                <rating type="Elo">2080</rating>
             </ratings>
         </player>
         <player id="71">
@@ -1298,8 +1298,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1992</rating>
                 <rating type="DWZ">2046</rating>
+                <rating type="Elo">1992</rating>
             </ratings>
         </player>
         <player id="72">
@@ -1316,8 +1316,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1677</rating>
                 <rating type="DWZ">1633</rating>
+                <rating type="Elo">1677</rating>
             </ratings>
         </player>
         <player id="73">
@@ -1334,8 +1334,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2089</rating>
                 <rating type="DWZ">2151</rating>
+                <rating type="Elo">2089</rating>
             </ratings>
         </player>
         <player id="74">
@@ -1352,8 +1352,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1757</rating>
                 <rating type="DWZ">1699</rating>
+                <rating type="Elo">1757</rating>
             </ratings>
         </player>
         <player id="75">
@@ -1403,8 +1403,8 @@
                 </club>
             </identifiers>
             <ratings>
-                <rating type="Elo">2150</rating>
                 <rating type="DWZ">2149</rating>
+                <rating type="Elo">2150</rating>
             </ratings>
         </player>
         <player id="78">
@@ -1421,8 +1421,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1751</rating>
                 <rating type="DWZ">1651</rating>
+                <rating type="Elo">1751</rating>
             </ratings>
         </player>
         <player id="79">
@@ -1439,8 +1439,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">1780</rating>
                 <rating type="DWZ">1851</rating>
+                <rating type="Elo">1780</rating>
             </ratings>
         </player>
         <player id="80">
@@ -1471,8 +1471,8 @@
                 <federation code="USA"/>
             </identifiers>
             <ratings>
-                <rating type="Elo">2025</rating>
                 <rating type="DWZ">2097</rating>
+                <rating type="Elo">2025</rating>
             </ratings>
         </player>
         <player id="82">

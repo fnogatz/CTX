@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<player id="1">
+    <name type="string">Mary</name>
+    <ratings>
+        <rating type="Elo">2345</rating>
+        <rating type="DWZ">1234</rating>
+    </ratings>
+</player>

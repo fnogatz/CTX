@@ -20,5 +20,5 @@
     <xs:element name="address" type="address" />
 
     <xs:element name="person-identifiers" type="person-identifiers" />
-
+    <xs:element name="player" type="player" />
 </xs:schema>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
+    <xs:include schemaLocation="persons.xsd" />
+    <xs:include schemaLocation="ratings.xsd" />
+
+    <xs:complexType name="player">
+        <xs:complexContent>
+            <xs:extension base="person">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Additional player information
+                    </xs:documentation>
+                </xs:annotation>
+
+                <xs:sequence>
+                    <xs:element name="title" minOccurs="0">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="WGM" />
+                                <xs:enumeration value="WIM" />
+                                <xs:enumeration value="WFM" />
+                                <xs:enumeration value="GM" />
+                                <xs:enumeration value="IM" />
+                                <xs:enumeration value="FM" />
+                                <xs:enumeration value="CM" />
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+
+                    <xs:element name="ratings" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="rating" type="rating" minOccurs="1" maxOccurs="unbounded" />
+                            </xs:sequence>
+
+                            <xs:assert
+                                test="every $i in 1 to count(rating)-1 satisfies (compare(lower-case(rating[$i]/@type), lower-case(rating[$i+1]/@type)) eq -1)"
+                                xerces:message="Ratings must be sorted by their type's name." />
+                        </xs:complexType>
+
+                        <xs:unique name="unique-player-rating">
+                            <xs:selector xpath="rating" />
+                            <xs:field xpath="@type" />
+                        </xs:unique>
+                    </xs:element>
+                </xs:sequence>
+
+                <xs:attribute name="id" type="xs:positiveInteger" use="required" />
+                <xs:attribute name="inactive" type="xs:boolean" default="false" use="optional" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

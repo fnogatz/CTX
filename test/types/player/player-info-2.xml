@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<player id="1">
+    <name type="string">Mary</name>
+    <ratings>
+        <rating>1234</rating>
+    </ratings>
+</player>

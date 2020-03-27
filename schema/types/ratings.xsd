@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
+    <xs:complexType name="rating">
+        <xs:simpleContent>
+            <xs:extension base="xs:integer">
+                <xs:attribute name="type" type="rating-system" use="optional" default="" />
+
+                <xs:attribute name="estimated" type="xs:boolean" use="optional" default="false">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Flag to be set if rating has been estimated by the tournament organisers.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="rating-system">
+        <xs:union memberTypes="known-rating-system xs:string"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="known-rating-system">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Elo" />
+            <xs:enumeration value="DWZ" />
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
