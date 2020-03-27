@@ -24,12 +24,6 @@ Apache Xerces requires Java. By calling `make xerces`, Apache Xerces gets downlo
 
 [Swiss-Chess](http://swiss-chess.de) (sometimes called WinSwiss) is the most popular chess tournament management software in Germany. It saves its tournament data in binary SWT-files. There already exists a [converter to CTX](https://github.com/fnogatz/swt2ctx), written for [node.js](http://nodejs.org).
 
-## Todo
-
-- Split the big XSD file into parts, e.g. one for each first-child-element.
-- Add english `xs:annotation`.
-- Provide a more relaxed, XSD 1.0 compatible Schema without the `xs:assert`, `xs:assertion` and `xs:alternative` sugar.
-
 ## FAQ
 
 ### How is it different to FIDE's TRF?
