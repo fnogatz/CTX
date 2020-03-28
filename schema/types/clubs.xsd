@@ -2,13 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xerces="http://xerces.apache.org">
     <xs:complexType name="identifier-club">
         <xs:sequence>
-            <xs:element name="name">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:minLength value="1" />
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:element>
+            <xs:element name="name" type="str_minLength-1" />
         </xs:sequence>
 
         <xs:attribute name="federation" type="country-code" use="optional">
@@ -22,31 +16,5 @@
         <xs:assert
             test="@federation or not(id)"
             xerces:message="Attribute @federation must be set for clubs with given club/id." />
-    </xs:complexType>
-
-    <xs:complexType name="player-identifier-club">
-        <xs:complexContent>
-            <xs:extension base="identifier-club">
-                <xs:sequence>
-                    <xs:sequence minOccurs="0">
-                        <xs:element name="id">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:minLength value="1" />
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:element>
-
-                        <xs:element name="member-id" minOccurs="0">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:minLength value="1" />
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
     </xs:complexType>
 </xs:schema>

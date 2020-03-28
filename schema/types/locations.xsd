@@ -5,11 +5,8 @@
     <xs:complexType name="location">
         <xs:sequence>
             <xs:element name="name" type="xs:string" />
-
             <xs:element name="address" type="address" minOccurs="0" />
-
             <xs:element name="phone" type="xs:string" minOccurs="0" />
-
             <xs:element name="information" minOccurs="0">
                 <xs:complexType>
                     <xs:sequence>

@@ -76,13 +76,62 @@
                 </xs:complexType>
             </xs:element>
 
-            <xs:element name="identifiers" type="person-identifiers" minOccurs="0" />
+            <xs:element name="identifiers" minOccurs="0">
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            A person's identifiers as stored by federations, etc.
+                        </xs:documentation>
+                    </xs:annotation>
+
+                    <xs:sequence>
+                        <xs:element name="fide" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="id">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:positiveInteger">
+                                                <xs:minInclusive value="1000000" />
+                                                <xs:maxExclusive value="100000000" />
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+
+                        <xs:element name="federation" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="id" type="str_minLength-1" minOccurs="0" />
+                                </xs:sequence>
+
+                                <xs:attribute name="code" type="country-code" use="required" />
+                            </xs:complexType>
+                        </xs:element>
+
+                        <xs:element name="club" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="identifier-club">
+                                        <xs:sequence>
+                                            <xs:sequence minOccurs="0">
+                                                <xs:element name="id" type="str_minLength-1" />
+                                                <xs:element name="member-id" type="str_minLength-1" minOccurs="0" />
+                                            </xs:sequence>
+                                        </xs:sequence>
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
 
             <xs:element name="contact-information" minOccurs="0">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element name="address" type="address" minOccurs="0" />
-                        
                         <xs:element name="phone" type="phone" minOccurs="0" maxOccurs="unbounded" />
 
                         <xs:element name="mail" minOccurs="0" maxOccurs="unbounded">
@@ -91,8 +140,8 @@
                                     <xs:extension base="mail-entity">
                                         <xs:attribute name="description" type="xs:string">
                                             <xs:annotation>
-                                                <xs:documentation xml:lang="de">
-                                                    Bemerkung/Beschreibung zur Mail-Adresse.
+                                                <xs:documentation xml:lang="en">
+                                                    Notes for mail address, e.g., to mark private or business mail.
                                                 </xs:documentation>
                                             </xs:annotation>
                                         </xs:attribute>
@@ -102,74 +151,20 @@
                         </xs:element>
                     </xs:sequence>
 
-                    <xs:assert test="count(*) ge 0" xerces:message="'contact' node must not be empty.">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Wenn "contact" vorhanden ist, dann darf es nicht leer sein.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:assert>
+                    <xs:assert
+                        test="count(*) ge 0"
+                        xerces:message="'contact' node must not be empty." />
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
 
     <xs:simpleType name="person-origin-type">
-        <xs:annotation>
-            <xs:documentation xml:lang="de">
-                Aufzählung möglicher Attribute für
-                /tournament/players/player/origin/@type
-            </xs:documentation>
-        </xs:annotation>
-
         <xs:restriction base="xs:string">
             <xs:enumeration value="school" />
             <xs:enumeration value="city" />
         </xs:restriction>
     </xs:simpleType>
-
-    <xs:complexType name="person-identifiers">
-        <xs:annotation>
-            <xs:documentation xml:lang="en">
-                A person's identifiers as stored by federations, etc.
-            </xs:documentation>
-        </xs:annotation>
-
-        <xs:sequence>
-            <xs:element name="fide" minOccurs="0">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="id">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:positiveInteger">
-                                    <xs:minInclusive value="1000000" />
-                                    <xs:maxExclusive value="100000000" />
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="federation" minOccurs="0">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="id" minOccurs="0">
-                            <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                    <xs:minLength value="1" />
-                                </xs:restriction>
-                            </xs:simpleType>
-                        </xs:element>
-                    </xs:sequence>
-
-                    <xs:attribute name="code" type="country-code" use="required" />
-                </xs:complexType>
-            </xs:element>
-
-            <xs:element name="club" type="player-identifier-club" minOccurs="0" maxOccurs="unbounded" />
-        </xs:sequence>
-    </xs:complexType>
 
     <xs:simpleType name="mail-entity">
         <xs:annotation>
@@ -182,4 +177,22 @@
             <xs:pattern value="([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:complexType name="person-name-complex">
+        <xs:sequence>
+            <xs:element name="prename" type="xs:string" />
+            <xs:element name="surname" type="str_minLength-1" />
+
+            <xs:element name="display-name" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Name to be displayed (e.g., in pairings and standings), if different
+                        to prename/surname.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="academic-title" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>

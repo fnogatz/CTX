@@ -180,13 +180,7 @@
 
     <xs:complexType name="tournament">
         <xs:all>
-            <xs:element name="information" type="tournament-information">
-                <xs:annotation>
-                    <xs:documentation xml:lang="en">
-                        General, static information about the tournament
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
+            <xs:element name="information" type="tournament-information" />
 
             <xs:element name="players" minOccurs="0">
                 <xs:complexType>
@@ -602,20 +596,14 @@
                     </xs:element>
 
                     <xs:element name="settings">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Generelle, statische Turniereinstellungen.
-                            </xs:documentation>
-                        </xs:annotation>
-
                         <xs:complexType>
                             <xs:all>
                                 <xs:element name="general">
                                     <xs:complexType>
-                                        <xs:all>
+                                        <xs:sequence>
                                             <xs:element name="rounds" type="xs:positiveInteger" />
                                             <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0" default="1" />
-                                        </xs:all>
+                                        </xs:sequence>
                                     </xs:complexType>
                                 </xs:element>
 
@@ -1499,7 +1487,46 @@
                                                 </xs:unique>
                                             </xs:element>
 
-                                            <xs:element name="teams" type="game-points-team" minOccurs="0">
+                                            <xs:element name="teams" minOccurs="0">
+                                                <xs:complexType>
+                                                    <xs:annotation>
+                                                        <xs:documentation xml:lang="de">
+                                                            Punkteverteilung für Mannschaftspaarungen. 
+                                                            Standard: Sieg=2, Unentschieden=1, Verlust=0.
+                                                            Im Gegensatz zu Einzelpaarungen kann die Punktvergabe bei
+                                                            Mannschaftspaarungen nicht farbabhängig sein.
+                                                        </xs:documentation>
+                                                    </xs:annotation>
+
+                                                    <xs:sequence>
+                                                        <xs:element name="win" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="2" />
+                                                        <xs:element name="draw" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="1" />
+                                                        <xs:element name="loss" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="0" />
+                                                    </xs:sequence>
+
+                                                    <xs:attribute name="win-mode" use="optional" default="points>opponent">
+                                                        <xs:simpleType>
+                                                            <xs:restriction base="xs:string">
+                                                                <xs:enumeration value="points>50%">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation xml:lang="en">
+                                                                            The team with more than 50% of the possible points wins.
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                </xs:enumeration>
+
+                                                                <xs:enumeration value="points>opponent">
+                                                                    <xs:annotation>
+                                                                        <xs:documentation xml:lang="en">
+                                                                            The team with more points than its opponent wins.
+                                                                        </xs:documentation>
+                                                                    </xs:annotation>
+                                                                </xs:enumeration>
+                                                            </xs:restriction>
+                                                        </xs:simpleType>
+                                                    </xs:attribute>
+                                                </xs:complexType>
+
                                                 <xs:unique name="t_unique-game-points-teams_win">
                                                     <xs:selector xpath="win" />
                                                     <xs:field xpath="@attribute" />
@@ -1703,8 +1730,7 @@
                                     <xs:unique name="unique-rankings-initial-team-position">
                                         <xs:annotation>
                                             <xs:documentation xml:lang="de">
-                                                Die angegebenen Positionen müssen in der Startrangliste 
-                                                (im Gegensatz zu herkömmlichen Ranglisten) eindeutig sein.
+                                                Die angegebenen Positionen müssen in der Startrangliste (im Gegensatz zu herkömmlichen Ranglisten) eindeutig sein.
                                             </xs:documentation>
                                         </xs:annotation>
 
@@ -1715,8 +1741,7 @@
                                     <xs:unique name="unique-rankings-initial-team-id">
                                         <xs:annotation>
                                             <xs:documentation xml:lang="de">
-                                                Die angegebenen Mannschaften dürfen nur einmal in der 
-                                                Startrangliste geführt werden.
+                                                Die angegebenen Mannschaften dürfen nur einmal in der Startrangliste geführt werden.
                                             </xs:documentation>
                                         </xs:annotation>
 
@@ -1823,10 +1848,8 @@
                                     ) or ( 
                                         teams/team[@id eq $team]/players/player[@id eq $table/boards/board[$board]/((white | black)[@team eq $team]/@player | player[@team eq $team]/@id)]/@position lt teams/team[@id eq $team]/players/player[@id eq $table/boards/board[$compare]/((white | black)[@team eq $team]/@player | player[@team eq $team]/@id)]/@position
                                             (: the position of the player on board $board must be lower than the one of the player on board $compare :)
-                                    )
-                                )
-                            )
-                        ) else ( true() )"
+                                    ))))
+                        else ( true() )"
                     xerces:message="The players must be seeded in the right order. Otherwise you have to mark every player seeded too low with the @seeded-too-low='true' attribute.">
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
@@ -1856,10 +1879,8 @@
                                     every $tableno in pairings/inning[1]/rounds/round[@number eq $roundno]/tables/table/@number satisfies (
                                         every $team in pairings/inning[1]/rounds/round[@number eq $roundno]/tables/table[@number eq $tableno]/team/@id satisfies (
                                             count(pairings/inning/rounds/round[@number eq $roundno]/tables/table[@number eq $tableno]/team[@id eq $team]) eq settings/pairings/system[@type eq 'Round-Robin']/innings
-                                        )
-                                    )
-                                )
-                            ) else (true())"
+                                        ))))
+                            else (true())"
                     xerces:message="The competiting teams on a specific table in a specific round must be the same in all innings.">
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
@@ -1904,11 +1925,8 @@
                                             $table/boards/board[$boardno]/(white | player[1])/@team eq $table/team[@position eq 1]/@id
                                         ) else (
                                             $table/boards/board[$boardno]/(black | player[2])/@team eq $table/team[@position eq 1]/@id and
-                                            $table/boards/board[$boardno]/(white | player[1])/@team eq $table/team[@position eq 2]/@id
-                                        )
-                                    )
-                                )
-                            ) else ( true() )"
+                                            $table/boards/board[$boardno]/(white | player[1])/@team eq $table/team[@position eq 2]/@id))))
+                            else ( true() )"
                     xerces:message="The players must have the colors according to the listing in /tournament/settings/general/boards/@colors.">
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
@@ -1927,9 +1945,8 @@
                                 if (settings/pairings/system[@type eq 'Swiss']/position-of-first eq 1) then (
                                     (pairings | pairings/inning[@number eq 1]/rounds)/round[@number eq 1]/tables/table[@number eq 1]/team[@position eq 1]/@id eq rankings/initial/team[@position eq 1]/@id
                                 ) else (
-                                    (pairings | pairings/inning[@number eq 1]/rounds)/round[@number eq 1]/tables/table[@number eq 1]/team[@position eq 2]/@id eq rankings/initial/team[@position eq 1]/@id
-                                )
-                            ) else ( true() )"
+                                    (pairings | pairings/inning[@number eq 1]/rounds)/round[@number eq 1]/tables/table[@number eq 1]/team[@position eq 2]/@id eq rankings/initial/team[@position eq 1]/@id))
+                            else ( true() )"
                     xerces:message="The team with seeding position 1 has to have the same color in the very first round as specified in /tournament/settings/pairings/system[@type eq 'Swiss']/position-of-first.">
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
@@ -1945,9 +1962,8 @@
                 <xs:assert
                     test="if (settings/general/team-members and xs:string(settings/general/team-members) ne 'unbounded') then (
                                 every $team in teams/team satisfies(
-                                    count($team/players/player) le xs:integer(settings/general/team-members)
-                                )
-                            ) else (true())"
+                                    count($team/players/player) le xs:integer(settings/general/team-members)))
+                            else (true())"
                     xerces:message="The number of players of each team must be less or equal to the number specified in /tournament/settings/general/team-members." />
 
                 <xs:assert
@@ -1955,27 +1971,21 @@
                                 if (count(teams/team/identifiers/federation[xs:string(@code) eq xs:string($federation_code)]) eq 1) then (
                                     true()
                                 ) else (
-                                    count(teams/team/identifiers/federation[xs:string(@code) eq xs:string($federation_code)][not(team-number)]) eq 0
-                                )
-                            )"
+                                    count(teams/team/identifiers/federation[xs:string(@code) eq xs:string($federation_code)][not(team-number)]) eq 0))"
                     xerces:message="If more than one team is sent by a federation, all of its teams must be numbered by their 'team-number' element." />
                 <xs:assert
                     test="every $organization_name in distinct-values(data(teams/team/identifiers/organization/name)) satisfies (
                                 if (count(teams/team/identifiers/organization[xs:string(name) eq xs:string($organization_name)]) eq 1) then (
                                     true()
                                 ) else (
-                                    count(teams/team/identifiers/organization[xs:string(name) eq xs:string($organization_name)][not(team-number)]) eq 0
-                                )
-                            )"
+                                    count(teams/team/identifiers/organization[xs:string(name) eq xs:string($organization_name)][not(team-number)]) eq 0))"
                     xerces:message="If more than one team is sent by a organization, all of its teams must be numbered by their 'team-number' element." />
                 <xs:assert
                     test="every $club_name in distinct-values(data(teams/team/identifiers/club/name)) satisfies (
                                 if (count(teams/team/identifiers/club[xs:string(name) eq xs:string($club_name)]) eq 1) then (
                                     true()
                                 ) else (
-                                    count(teams/team/identifiers/club[xs:string(name) eq xs:string($club_name)][not(team-number)]) eq 0
-                                )
-                            )"
+                                    count(teams/team/identifiers/club[xs:string(name) eq xs:string($club_name)][not(team-number)]) eq 0))"
                     xerces:message="If more than one team is sent by a club, all of its teams must be numbered by their 'team-number' element." />
             </xs:extension>
         </xs:complexContent>
@@ -2049,7 +2059,6 @@
                         <xs:element name="host">
                             <xs:complexType>
                                 <xs:attribute name="team" type="xs:integer" use="required" />
-
                                 <xs:attribute name="location" type="team-location-id" use="required" />
 
                                 <xs:assert
@@ -2084,7 +2093,6 @@
             <xs:element name="arbiter" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:attribute name="id" type="xs:positiveInteger" use="required" />
-
                     <xs:attribute name="role" type="arbiter-role" use="optional" />
                 </xs:complexType>
             </xs:element>
@@ -2134,24 +2142,6 @@
         </xs:simpleContent>
     </xs:complexType>
 
-    <xs:complexType name="person-name-complex">
-        <xs:sequence>
-            <xs:element name="prename" type="xs:string" />
-
-            <xs:element name="surname" type="str_minLength-1" />
-
-            <xs:element name="display-name" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Anzeige-Name, falls abweichend von Vorname/Nachname-Kombination.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-
-            <xs:element name="academic-title" type="xs:string" minOccurs="0" />
-        </xs:sequence>
-    </xs:complexType>
-
     <xs:simpleType name="str_minLength-1">
         <xs:restriction base="xs:string">
             <xs:minLength value="1" />
@@ -2174,34 +2164,11 @@
     <xs:simpleType name="color-with-blank">
         <xs:union memberTypes="color blank" />
     </xs:simpleType>
-    
-    <xs:simpleType name="team-win-mode">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="more than 50%">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Die Mannschaft, die mehr als 50% der Punkte erzielt, hat die
-                        Begegnung gewonnen.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-
-            <xs:enumeration value="more than opponent">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Die Mannschaft, die mehr Punkte als der Gegner erzielt, hat die
-                        Begegnung gewonnen.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-        </xs:restriction>
-    </xs:simpleType>
 
     <xs:complexType name="game-points-individual-result">
         <xs:simpleContent>
             <xs:extension base="xs:decimal">
                 <xs:attribute name="attribute" type="result-attribute" use="optional" default="" />
-
                 <xs:attribute name="color" type="color-with-blank" use="optional" default="" />
             </xs:extension>
         </xs:simpleContent>
@@ -2235,28 +2202,8 @@
                     then (empty(win[@attribute eq $a][@color eq '']) 
                                     and count(win[@attribute eq $a][@color eq 'white']) eq 1 
                                     and count(win[@attribute eq $a][@color eq 'black']) eq 1)
-                    else (true())
-                )"
+                    else (true()))"
             xerces:message="The points are given either dependently on the @color or not, but never mixed." />
-    </xs:complexType>
-
-    <xs:complexType name="game-points-team">
-        <xs:annotation>
-            <xs:documentation xml:lang="de">
-                Punkteverteilung für Mannschaftspaarungen. 
-                Standard: Sieg=2, Unentschieden=1, Verlust=0.
-                Im Gegensatz zu Einzelpaarungen kann die Punktvergabe bei
-                Mannschaftspaarungen nicht farbabhängig sein.
-            </xs:documentation>
-        </xs:annotation>
-
-        <xs:sequence>
-            <xs:element name="win" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="2" />
-            <xs:element name="draw" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="1" />
-            <xs:element name="loss" type="game-points-team-result" minOccurs="0" maxOccurs="unbounded" default="0" />
-        </xs:sequence>
-
-        <xs:attribute name="win-mode" type="team-win-mode" use="optional" default="more than opponent" />
     </xs:complexType>
 
     <xs:complexType name="single-result-summarization">
@@ -2314,9 +2261,7 @@
     <xs:simpleType name="result-attribute">
         <xs:restriction base="xs:string">
             <xs:enumeration value="by-default" />
-
             <xs:enumeration value="adjourned" />
-
             <xs:enumeration value="" />
         </xs:restriction>
     </xs:simpleType>
@@ -2357,8 +2302,7 @@
     <xs:complexType name="_interface-board-general">
         <xs:annotation>
             <xs:documentation xml:lang="de">
-                Oberklasse für board-bye und board, sollte nicht
-                direkt benutzt werden.
+                Oberklasse für board-bye und board, sollte nicht direkt benutzt werden.
             </xs:documentation>
         </xs:annotation>
 
@@ -2511,8 +2455,7 @@
                             <xs:element name="results">
                                 <xs:annotation>
                                     <xs:documentation xml:lang="de">
-                                        Auflistung der Resultate aller (bisher absolvierten) 
-                                        Einzelspiele.
+                                        Auflistung der Resultate aller (bisher absolvierten) Einzelspiele.
                                     </xs:documentation>
                                 </xs:annotation>
 
@@ -2737,8 +2680,7 @@
                             <xs:element name="results">
                                 <xs:annotation>
                                     <xs:documentation xml:lang="de">
-                                        Auflistung der Resultate aller (bisher absolvierten) 
-                                        Einzelspiele.
+                                        Auflistung der Resultate aller (bisher absolvierten) Einzelspiele.
                                     </xs:documentation>
                                 </xs:annotation>
 
@@ -2870,6 +2812,9 @@
 
                     <xs:enumeration value="live">
                         <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Live standings, based on live results.
+                            </xs:documentation>
                             <xs:documentation xml:lang="de">
                                 Live-Tabelle, resultierend aus Live-Ergebnissen.
                             </xs:documentation>
@@ -2899,42 +2844,29 @@
                             <xs:enumeration value="Rating">
                                 <xs:annotation>
                                     <xs:documentation xml:lang="de">
-                                        Wertungszahl.
-                                        Es können auch mehrere Rating-Systeme angegeben werden, wenn
-                                        zusätzlich das @get="{min,max}" Attribut angegeben wird. In 
-                                        diesem Fall wird die höchste bzw. niedrigste dieser Zahlen
-                                        genutzt.
+                                        Wertungszahl. Es können auch mehrere Rating-Systeme angegeben werden, wenn zusätzlich das @get="{min,max}" Attribut angegeben wird. In diesem Fall wird die höchste bzw. niedrigste dieser Zahlen genutzt.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:enumeration>
 
                             <xs:enumeration value="FIDE-Title">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Sort by FIDE title. Order: GM - IM - WGM - FM - WIM - CM - WFM - WCM - without
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
-                                        Sortierung nach FIDE-Titeln. Reihenfolge:
-                                        GM - IM - WGM - FM - WIM - CM - WFM - WCM - ohne
+                                        Sortierung nach FIDE-Titeln. Reihenfolge: GM - IM - WGM - FM - WIM - CM - WFM - WCM - ohne
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:enumeration>
 
-                            <xs:enumeration value="Name">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Alphabetische Sortierung nach "Name,Vorname".
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Random">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Auslosen.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
+                            <xs:enumeration value="Name" />
+                            <xs:enumeration value="Random" />
                             <xs:enumeration value="Custom">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Custom criterion.
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
                                         Eigene Wertung.
                                     </xs:documentation>
@@ -2953,9 +2885,7 @@
                 <xs:choice>
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
-                            Es kann entweder genau ein Rating-Type angegeben werden oder
-                            mehrere, von denen der Minimal- oder Maximalwert oder der erste
-                            Wert ungleich null genutzt wird.
+                            Es kann entweder genau ein Rating-Type angegeben werden oder mehrere, von denen der Minimal- oder Maximalwert oder der erste Wert ungleich null genutzt wird.
                         </xs:documentation>
                     </xs:annotation>
 
@@ -2985,16 +2915,14 @@
                     <xs:element name="rating-types" type="ranking-criterion-Rating-multiples">
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
-                                Angabe mehrerer Rating-Types, deren Minimal- oder Maximalwert
-                                oder erster Wert ungleich null genutzt wird.
+                                Angabe mehrerer Rating-Types, deren Minimal- oder Maximalwert oder erster Wert ungleich null genutzt wird.
                             </xs:documentation>
                         </xs:annotation>
 
                         <xs:alternative test="@get eq 'order'" type="ranking-criterion-Rating-multiples_ordered">
                             <xs:annotation>
                                 <xs:documentation xml:lang="de">
-                                    Angabe der Rating-Types in einer Reihenfolge, deren erster
-                                    Wert ungleich null angenommen wird.
+                                    Angabe der Rating-Types in einer Reihenfolge, deren erster Wert ungleich null angenommen wird.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:alternative>
@@ -3002,8 +2930,7 @@
                         <xs:alternative test="true()" type="ranking-criterion-Rating-multiples_minmax">
                             <xs:annotation>
                                 <xs:documentation xml:lang="de">
-                                    Angabe der Rating-Types ohne Reihenfolge, Minimal-
-                                    oder Maximalwert wird angenommen.
+                                    Angabe der Rating-Types ohne Reihenfolge, Minimal- oder Maximalwert wird angenommen.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:alternative>
@@ -3109,9 +3036,11 @@
                 <xs:sequence>
                     <xs:element name="name">
                         <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Name of the self-defined criterion.
+                            </xs:documentation>
                             <xs:documentation xml:lang="de">
                                 Name der selbstdefinierten Wertung.
-                                Pflichtangabe.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3120,9 +3049,11 @@
                                 <xs:extension base="xs:string">
                                     <xs:attribute name="abbreviation" type="xs:string" use="optional">
                                         <xs:annotation>
+                                            <xs:documentation xml:lang="en">
+                                                Abbreviation, e.g., for usage in standings.
+                                            </xs:documentation>
                                             <xs:documentation xml:lang="de">
                                                 Abkürzung der Wertung, etwa zur Angabe in Tabellen.
-                                                Optional.
                                             </xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
@@ -3135,7 +3066,6 @@
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Angabe, was für Werte angenommen werden können: "numeric", "alphanumeric", "alphabetic".
-                                Optional.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3195,24 +3125,13 @@
                                 </xs:annotation>
                             </xs:enumeration>
 
-                            <xs:enumeration value="Name">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Alphabetische Sortierung nach Teamname.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Random">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Auslosen.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
+                            <xs:enumeration value="Name" />
+                            <xs:enumeration value="Random" />
                             <xs:enumeration value="Custom">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Self-defined criterion.
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
                                         Eigene Wertung.
                                     </xs:documentation>
@@ -3234,7 +3153,6 @@
                             <xs:documentation xml:lang="de">
                                 Anzahl der Spieler, die in die Durchschnittsberechnung einfließen sollen.
                                 Entweder ein xs:positiveInteger-Wert oder "all" (Standard).
-                                Pflichtangabe.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
@@ -3242,8 +3160,7 @@
                     <xs:choice>
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
-                                Es kann entweder genau ein Rating-Type angegeben werden oder
-                                mehrere, von denen der Minimal- oder Maximalwert genutzt wird.
+                                Es kann entweder genau ein Rating-Type angegeben werden oder mehrere, von denen der Minimal- oder Maximalwert genutzt wird.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3275,8 +3192,7 @@
                             <xs:alternative test="true()" type="_t_ranking-criterion-Rating-multiples_minmax">
                                 <xs:annotation>
                                     <xs:documentation xml:lang="de">
-                                        Angabe der Rating-Types ohne Reihenfolge, Minimal-
-                                        oder Maximalwert wird angenommen.
+                                        Angabe der Rating-Types ohne Reihenfolge, Minimal- oder Maximalwert wird angenommen.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:alternative>
@@ -3311,8 +3227,7 @@
                     <xs:enumeration value="order">
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
-                                Die Rating-Systeme werden in definierter Reihenfolge
-                                übergeben und der erste Wert ungleich null wird genutzt.
+                                Die Rating-Systeme werden in definierter Reihenfolge übergeben und der erste Wert ungleich null wird genutzt.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:enumeration>
@@ -3377,7 +3292,6 @@
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Name der selbstdefinierten Wertung.
-                                Pflichtangabe.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3386,9 +3300,11 @@
                                 <xs:extension base="xs:string">
                                     <xs:attribute name="abbreviation" type="xs:string" use="optional">
                                         <xs:annotation>
+                                            <xs:documentation xml:lang="en">
+                                                Abbreviation, e.g., for usage in standings.
+                                            </xs:documentation>
                                             <xs:documentation xml:lang="de">
                                                 Abkürzung der Feinwertung, etwa zur Angabe in Tabellen.
-                                                Optional.
                                             </xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
@@ -3401,7 +3317,6 @@
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Angabe, was für Werte angenommen werden können: "numeric", "alphanumeric", "alphabetic".
-                                Optional.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3499,24 +3414,12 @@
     </xs:complexType>
 
     <xs:simpleType name="str_all">
-        <xs:annotation>
-            <xs:documentation xml:lang="de">
-                xs:string, das nur "all" zulässt.
-            </xs:documentation>
-        </xs:annotation>
-
         <xs:restriction base="xs:string">
             <xs:enumeration value="all" />
         </xs:restriction>
     </xs:simpleType>
 
     <xs:simpleType name="str_unbounded">
-        <xs:annotation>
-            <xs:documentation xml:lang="de">
-                xs:string, das nur "unbounded" zulässt.
-            </xs:documentation>
-        </xs:annotation>
-
         <xs:restriction base="xs:string">
             <xs:enumeration value="unbounded" />
         </xs:restriction>
@@ -3528,29 +3431,9 @@
                 <xs:attribute name="type">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:enumeration value="Points">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Punkte.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Buchholz">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Buchholz-Wertung und verfeinerte Buchholz-Wertung.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Buchholz-Sum">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Buchholz-Summe.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
+                            <xs:enumeration value="Points" />
+                            <xs:enumeration value="Buchholz" />
+                            <xs:enumeration value="Buchholz-Sum" />
 
                             <xs:enumeration value="Progressive-Score">
                                 <xs:annotation>
@@ -3570,13 +3453,7 @@
                                 </xs:annotation>
                             </xs:enumeration>
 
-                            <xs:enumeration value="Sonneborn-Berger">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Sonneborn-Berger-Wertung.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
+                            <xs:enumeration value="Sonneborn-Berger" />
 
                             <xs:enumeration value="Wins">
                                 <xs:annotation>
@@ -3588,6 +3465,9 @@
 
                             <xs:enumeration value="Black-Pieces">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Number of games with black pieces.
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
                                         Anzahl der Partien mit Schwarz.
                                     </xs:documentation>
@@ -3596,10 +3476,11 @@
 
                             <xs:enumeration value="Koya">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Koya value, sum of points of opponents that achieved more than x percent of points.
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
-                                        Koya-Wertung.
-                                        Summe der Punkte von Gegnern, die mehr als x 
-                                        Prozent der Punkte eingefahren haben.
+                                        Koya-Wertung, Summe der Punkte von Gegnern, die mehr als x Prozent der Punkte eingefahren haben.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:enumeration>
@@ -3617,22 +3498,22 @@
 
                             <xs:enumeration value="Average-Rating">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Average rating of opponents.
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
                                         Durchschnittliche Wertungszahlen der Gegner.
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:enumeration>
 
-                            <xs:enumeration value="Random">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Auslosen.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
+                            <xs:enumeration value="Random" />
 
                             <xs:enumeration value="Custom">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Self-defined ranking criterion.
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
                                         Eigene Feinwertung.
                                     </xs:documentation>
@@ -3661,8 +3542,8 @@
                             </xs:documentation>
                         </xs:annotation>
 
-                        <xs:element name="lowest-cuts" type="xs:nonNegativeInteger" />
-                        <xs:element name="highest-cuts" type="xs:nonNegativeInteger" />
+                        <xs:element name="lowest-cuts" type="xs:nonNegativeInteger" default="0" />
+                        <xs:element name="highest-cuts" type="xs:nonNegativeInteger" default="0" />
                     </xs:sequence>
                 </xs:sequence>
             </xs:extension>
@@ -3697,7 +3578,7 @@
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Prozentsatz, die Gegner mindestens an Punkten geholt
-                                haben müssen, um die Wertung einzufließen.
+                                haben müssen, um in die Wertung einzufließen.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3732,9 +3613,7 @@
                             </xs:sequence>
 
                             <xs:assert
-                                test="every $c in criterion/@type satisfies (
-                                            not(empty(index-of(('Wins', 'Black-Pieces'), xs:string($c))))
-                                        )"
+                                test="every $c in criterion/@type satisfies (not(empty(index-of(('Wins', 'Black-Pieces'), xs:string($c)))))"
                                 xerces:message="@type must be either 'Wins' or 'Black-Pieces'." />
                         </xs:complexType>
                     </xs:element>
@@ -3810,9 +3689,11 @@
                 <xs:sequence>
                     <xs:element name="name">
                         <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Name of self-defined ranking criterion.
+                            </xs:documentation>
                             <xs:documentation xml:lang="de">
                                 Name der selbstdefinierten Feinwertung.
-                                Pflichtangabe.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3821,9 +3702,11 @@
                                 <xs:extension base="xs:string">
                                     <xs:attribute name="abbreviation" type="xs:string" use="optional">
                                         <xs:annotation>
+                                            <xs:documentation xml:lang="en">
+                                                Abbreviation, e.g., for usage in standings.
+                                            </xs:documentation>
                                             <xs:documentation xml:lang="de">
                                                 Abkürzung der Feinwertung, etwa zur Angabe in Tabellen.
-                                                Optional.
                                             </xs:documentation>
                                         </xs:annotation>
                                     </xs:attribute>
@@ -3836,7 +3719,6 @@
                         <xs:annotation>
                             <xs:documentation xml:lang="de">
                                 Angabe, was für Werte angenommen werden können: "numeric", "alphanumeric", "alphabetic".
-                                Optional.
                             </xs:documentation>
                         </xs:annotation>
 
@@ -3867,21 +3749,8 @@
                 <xs:attribute name="type">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:enumeration value="Game-Points">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Einzelpunkte.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Match-Points">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Mannschaftspunkte.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
+                            <xs:enumeration value="Game-Points" />
+                            <xs:enumeration value="Match-Points" />
 
                             <xs:enumeration value="Negative-Match-Points">
                                 <xs:annotation>
@@ -3895,50 +3764,18 @@
                                 </xs:annotation>
                             </xs:enumeration>
 
-                            <xs:enumeration value="Buchholz">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Buchholz.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Sonneborn-Berger">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Sonneborn-Berger.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Direct-Encounter">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Direkter Vergleich.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Berlin-System">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Berliner Wertung.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
-                            <xs:enumeration value="Random">
-                                <xs:annotation>
-                                    <xs:documentation xml:lang="de">
-                                        Auslosen.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:enumeration>
-
+                            <xs:enumeration value="Buchholz" />
+                            <xs:enumeration value="Sonneborn-Berger" />
+                            <xs:enumeration value="Direct-Encounter" />
+                            <xs:enumeration value="Berlin-System" />
+                            <xs:enumeration value="Random" />
                             <xs:enumeration value="Custom">
                                 <xs:annotation>
+                                    <xs:documentation xml:lang="en">
+                                        Some other ranking criterion
+                                    </xs:documentation>
                                     <xs:documentation xml:lang="de">
-                                        Eigene Feinwertung.
+                                        Eigene Feinwertung
                                     </xs:documentation>
                                 </xs:annotation>
                             </xs:enumeration>
@@ -3965,8 +3802,8 @@
                             </xs:documentation>
                         </xs:annotation>
 
-                        <xs:element name="lowest-cuts" type="xs:nonNegativeInteger" />
-                        <xs:element name="highest-cuts" type="xs:nonNegativeInteger" />
+                        <xs:element name="lowest-cuts" type="xs:nonNegativeInteger" default="0" />
+                        <xs:element name="highest-cuts" type="xs:nonNegativeInteger" default="0" />
                     </xs:sequence>
                 </xs:sequence>
             </xs:extension>
@@ -4264,9 +4101,11 @@
 
     <xs:complexType name="_t_round">
         <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Round, contains at least `information` or `tables`. Should not be empty.
+            </xs:documentation>
             <xs:documentation xml:lang="de">
-                Runde. Beinhaltet mindestens information oder tables, 
-                ist aber in keinem Fall leer.
+                Runde. Beinhaltet mindestens information oder tables, ist aber in keinem Fall leer.
             </xs:documentation>
         </xs:annotation>
 
@@ -4277,6 +4116,9 @@
 
             <xs:element name="tables" minOccurs="0" maxOccurs="1">
                 <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Has to contain at least one `table` element.
+                    </xs:documentation>
                     <xs:documentation xml:lang="de">
                         Beinhaltet mindestens ein table-Element.
                     </xs:documentation>
@@ -4307,6 +4149,9 @@
 
             <xs:enumeration value="bye">
                 <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Not paired, for instance for an odd number of participants.
+                    </xs:documentation>
                     <xs:documentation xml:lang="de">
                         Spielfrei, Freilos.
                     </xs:documentation>
@@ -4317,9 +4162,11 @@
 
     <xs:complexType name="_t_interface_table">
         <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Parents class for `_t_table-bye` and `_t_board`, should not be used directly.
+            </xs:documentation>
             <xs:documentation xml:lang="de">
-                Oberklasse für _t_table-bye und _t_board, sollte nicht
-                direkt benutzt werden.
+                Oberklasse für `_t_table-bye` und `_t_board`, sollte nicht direkt benutzt werden.
             </xs:documentation>
         </xs:annotation>
 
@@ -4416,10 +4263,7 @@
                                 <xs:attribute name="overruled" type="xs:boolean" use="optional" default="false">
                                     <xs:annotation>
                                         <xs:documentation xml:lang="de">
-                                            Nicht mehr gültiges Resultat, da von Instanz (Turnierleitung, 
-                                            Staffelleitung, Schiedsgericht, ...) aufgehoben.
-                                            Im Falle einer solchen Entscheidung ist das tatsächlich
-                                            gespielte Ergebnis mit diesem Attribut versehen.
+                                            Nicht mehr gültiges Resultat, da von Instanz (Turnierleitung, Staffelleitung, Schiedsgericht, ...) aufgehoben. Im Falle einer solchen Entscheidung ist das tatsächlich gespielte Ergebnis mit diesem Attribut versehen.
                                         </xs:documentation>
                                     </xs:annotation>
                                 </xs:attribute>
@@ -4428,6 +4272,9 @@
 
                         <xs:element name="boards">
                             <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    Pairings of the players of both teams
+                                </xs:documentation>
                                 <xs:documentation xml:lang="de">
                                     Einzelpaarungen der Mannschaftsspieler
                                 </xs:documentation>
@@ -4450,9 +4297,11 @@
 
                     <xs:element name="information" minOccurs="0" type="pairing-information-team">
                         <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Additional information to this pairing of two teams.
+                            </xs:documentation>
                             <xs:documentation xml:lang="de">
-                                Zusätzliche Informationen zu dieser Paarung zweier Mannschaften,
-                                optional.
+                                Zusätzliche Informationen zu dieser Paarung zweier Mannschaften.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
@@ -4488,38 +4337,20 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:simpleType name="pairings-system-name">
+    <xs:simpleType name="known-pairings-system-name">
         <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Name of the pairing system, to be used in individual and team tournaments.
+            </xs:documentation>
             <xs:documentation xml:lang="de">
-                Name des Auslosungssystems, möglich sowohl in Einzel-
-                als auch Mannschaftsturnieren.
+                Name des Auslosungssystems, möglich sowohl in Einzel- als auch Mannschaftsturnieren.
             </xs:documentation>
         </xs:annotation>
 
         <xs:restriction base="xs:string">
-            <xs:enumeration value="Swiss">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Schweizer System.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-
-            <xs:enumeration value="Round-Robin">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        Rundenturnier.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-
-            <xs:enumeration value="Knockout">
-                <xs:annotation>
-                    <xs:documentation xml:lang="de">
-                        KO-Turnier.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
+            <xs:enumeration value="Swiss" />
+            <xs:enumeration value="Round-Robin" />
+            <xs:enumeration value="Knockout" />
         </xs:restriction>
     </xs:simpleType>
 
@@ -4528,7 +4359,7 @@
 
         <xs:attribute name="type" use="required">
             <xs:simpleType>
-                <xs:union memberTypes="pairings-system-name" />
+                <xs:union memberTypes="known-pairings-system-name str_minLength-1" />
             </xs:simpleType>
         </xs:attribute>
     </xs:complexType>
@@ -4542,9 +4373,11 @@
                             <xs:sequence>
                                 <xs:element name="first-in-first-round" minOccurs="0">
                                     <xs:annotation>
+                                        <xs:documentation xml:lang="en">
+                                            Color of the player with the first position in the initial ranking in the first round.
+                                        </xs:documentation>
                                         <xs:documentation xml:lang="de">
-                                            Farbe des Spielers mit Startrangnummer 1 in der ersten
-                                            Runde.
+                                            Farbe des Spielers mit Startrangnummer 1 in der ersten Runde.
                                         </xs:documentation>
                                     </xs:annotation>
 
@@ -4552,14 +4385,7 @@
                                         <xs:restriction base="xs:string">
                                             <xs:enumeration value="white" />
                                             <xs:enumeration value="black" />
-
-                                            <xs:enumeration value="random">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Ausgelost.
-                                                    </xs:documentation>
-                                                </xs:annotation>
-                                            </xs:enumeration>
+                                            <xs:enumeration value="random" />
                                         </xs:restriction>
                                     </xs:simpleType>
                                 </xs:element>
@@ -4593,9 +4419,11 @@
 
                     <xs:element name="re-pair-by-default-games" type="xs:boolean" minOccurs="0">
                         <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Setting whether matches which were already paired but not played (i.e., forfeited, etc.) are allowed to be paired again.
+                            </xs:documentation>
                             <xs:documentation xml:lang="de">
-                                Flag, ob Spieler, deren Begegnung bereits kampflos zuende ging,
-                                noch einmal gegeneinander gepaart werden dürfen.
+                                Flag, ob Spieler, deren Begegnung bereits kampflos zuende ging, noch einmal gegeneinander gepaart werden dürfen.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
@@ -4604,19 +4432,12 @@
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="accelerated" minOccurs="0">
-                                    <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Beschleunigtes Paaren.
-                                        </xs:documentation>
-                                    </xs:annotation>
-
                                     <xs:complexType>
                                         <xs:sequence>
                                             <xs:element name="groups">
                                                 <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Anzahl der Gruppen, die für die erste Runde gebildet
-                                                        werden sollen.
+                                                    <xs:documentation xml:lang="en">
+                                                        Number of groups to be used in the pairings of the first round.
                                                     </xs:documentation>
                                                 </xs:annotation>
 
@@ -4631,12 +4452,6 @@
                                 </xs:element>
 
                                 <xs:element name="max-group-size" minOccurs="0">
-                                    <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Maximale Gruppengröße.
-                                        </xs:documentation>
-                                    </xs:annotation>
-
                                     <xs:simpleType>
                                         <xs:restriction base="xs:positiveInteger">
                                             <xs:minInclusive value="4" />
@@ -4745,7 +4560,7 @@
 
         <xs:attribute name="type" use="required">
             <xs:simpleType>
-                <xs:union memberTypes="pairings-system-name" />
+                <xs:union memberTypes="known-pairings-system-name str_minLength-1" />
             </xs:simpleType>
         </xs:attribute>
     </xs:complexType>
@@ -4759,10 +4574,8 @@
                             <xs:sequence>
                                 <xs:element name="first-in-first-round" minOccurs="0">
                                     <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Position der Mannschaft mit Startrangnummer 1 in der ersten
-                                            Runde. Entspricht colors/first-in-first-round bei Einzelturnieren.
-                                            Pflichtangabe.
+                                        <xs:documentation xml:lang="en">
+                                            Position of team with initial ranking number 1 in the first round. This setting is similar to colors/first-in-first-round in individual tournaments.
                                         </xs:documentation>
                                     </xs:annotation>
 
@@ -4770,34 +4583,23 @@
                                         <xs:restriction base="xs:string">
                                             <xs:enumeration value="1" />
                                             <xs:enumeration value="2" />
-
-                                            <xs:enumeration value="random">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Ausgelost.
-                                                    </xs:documentation>
-                                                </xs:annotation>
-                                            </xs:enumeration>
+                                            <xs:enumeration value="random" />
                                         </xs:restriction>
                                     </xs:simpleType>
                                 </xs:element>
 
                                 <xs:element name="max-difference" type="xs:positiveInteger" minOccurs="0">
                                     <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Höchstzulässige Differenz zwischen beiden Positionen, ehe ein "Farbwechsel"
-                                            strikt erforderlich wird.
-                                            Bei Angabe des Minimalwertes "1" ist neben der rein abwechselnden 
-                                            Farbverteilung etwa auch die Verteilung "1 2 2 1" möglich.
+                                        <xs:documentation xml:lang="en">
+                                            Maximum difference of colors before it must be changed. For instance, a value of `1` would allow a color sequence of "1 2 2 1".
                                         </xs:documentation>
                                     </xs:annotation>
                                 </xs:element>
 
                                 <xs:element name="max-series" type="xs:positiveInteger" minOccurs="0">
                                     <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Maximale Anzahl an aufeinanderfolgenden Runden mit der
-                                            gleichen Farbe. "1" bedeutet somit strikt abwechselnd.
+                                        <xs:documentation xml:lang="en">
+                                            Maximum number of sequential rounds to be paired with the same color. I.e., `1` stands for strictly alternating colors.
                                         </xs:documentation>
                                     </xs:annotation>
                                 </xs:element>
@@ -4811,9 +4613,9 @@
 
                     <xs:element name="re-pair-by-default-pairings" type="xs:boolean" minOccurs="0">
                         <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Flag, ob Mannschaften, deren Begegnung bereits kampflos zuende ging,
-                                noch einmal gegeneinander gepaart werden dürfen.
+                            <xs:documentation xml:lang="en">
+                                Setting whether matches which were already paired but not played
+                                (i.e., forfeited, etc.) are allowed to be paired again.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
@@ -4823,8 +4625,8 @@
                             <xs:sequence>
                                 <xs:element name="accelerated" minOccurs="0">
                                     <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Beschleunigtes Paaren.
+                                        <xs:documentation xml:lang="en">
+                                            Accelerated pairing
                                         </xs:documentation>
                                     </xs:annotation>
 
@@ -4832,9 +4634,8 @@
                                         <xs:sequence>
                                             <xs:element name="groups">
                                                 <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Anzahl der Gruppen, die für die erste Runde gebildet
-                                                        werden sollen.
+                                                    <xs:documentation xml:lang="en">
+                                                        Number of groups to be used in the first round
                                                     </xs:documentation>
                                                 </xs:annotation>
 
@@ -4849,12 +4650,6 @@
                                 </xs:element>
 
                                 <xs:element name="max-group-size" minOccurs="0">
-                                    <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Maximale Gruppengröße.
-                                        </xs:documentation>
-                                    </xs:annotation>
-
                                     <xs:simpleType>
                                         <xs:restriction base="xs:positiveInteger">
                                             <xs:minInclusive value="4" />
@@ -4933,8 +4728,8 @@
                 <xs:sequence>
                     <xs:element name="innings" type="xs:positiveInteger">
                         <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Anzahl der Durchgänge.
+                            <xs:documentation xml:lang="en">
+                                Number of innings
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
@@ -4957,10 +4752,8 @@
                 <xs:sequence>
                     <xs:element name="team-number" type="xs:positiveInteger" minOccurs="0">
                         <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Mannschaftsnummer, falls mehrere Mannschaften eines
-                                Vereins antreten.
-                                Optional.
+                            <xs:documentation xml:lang="en">
+                                Number of team, if there are multiple of the same club.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
@@ -4973,13 +4766,7 @@
         <xs:complexContent>
             <xs:extension base="_t_team-identifier-club_abstract">
                 <xs:sequence>
-                    <xs:element name="id" minOccurs="0">
-                        <xs:simpleType>
-                            <xs:restriction base="xs:string">
-                                <xs:minLength value="1" />
-                            </xs:restriction>
-                        </xs:simpleType>
-                    </xs:element>
+                    <xs:element name="id" type="str_minLength-1" minOccurs="0" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

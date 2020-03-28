@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<location>
+    <name>Club House</name>
+    <address>
+        <street>Park Avenue</street>
+        <city>London</city>
+    </address>
+    <phone>+49 123 456789</phone>
+    <information>
+        <catering>false</catering>
+        <disabled-friendly>true</disabled-friendly>
+    </information>
+</location>

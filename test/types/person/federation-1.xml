@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<person>
+    <name type="string">Paul</name>
+    <identifiers>
+        <federation code="USA"/>
+    </identifiers>
+</person>

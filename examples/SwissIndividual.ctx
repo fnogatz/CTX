@@ -8,7 +8,7 @@
         </location>
         <time-controls>
             <period number="1" type="string">40/90min + 30s/move</period>
-            <period number="2" type="string">Rest/30min + 30s/mov</period>
+            <period number="2" type="string">Rest/30min + 30s/move</period>
         </time-controls>
     </information>
     <settings>

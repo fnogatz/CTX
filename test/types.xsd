@@ -19,6 +19,6 @@
     <xs:element name="location" type="location" />
     <xs:element name="address" type="address" />
 
-    <xs:element name="person-identifiers" type="person-identifiers" />
+    <xs:element name="person" type="person" />
     <xs:element name="player" type="player" />
 </xs:schema>

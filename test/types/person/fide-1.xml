@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<person>
+    <name type="string">Mary</name>
+    <identifiers>
+        <fide>
+            <id>1234567</id>
+        </fide>
+    </identifiers>
+</person>

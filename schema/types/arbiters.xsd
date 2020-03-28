@@ -32,7 +32,6 @@
         <xs:assert
             test="every $i in 1 to count(arbiter) satisfies (arbiter[$i]/@id = $i)"
             xerces:message="Arbiters must be serially numbered, beginning with 1." />
-
         <xs:assert
             test="
                 every $i in 1 to count(arbiter)-1 satisfies (
@@ -58,19 +57,8 @@
                             compare(
                                 lower-case(concat(arbiter[$i]/name/surname, ',', arbiter[$i]/name/prename, ',', arbiter[$i]/name/academic-title)),
                                 lower-case(concat(arbiter[$i+1]/name/surname, ',', arbiter[$i+1]/name/prename, ',', arbiter[$i+1]/name/academic-title))
-                            ) le 0
-                        )
-                    )
-                )
-            " 
-            xerces:message="Arbiters must be sorted by their name.">
-            <xs:annotation>
-                <xs:documentation xml:lang="en">
-                    Note: the sort order depends on the collation, i.e.,
-                    by default 'a' lt 'z' lt 'ä' lt 'ö' lt 'ü'.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:assert>
+                            ) le 0)))" 
+            xerces:message="Arbiters must be sorted by their name." />
     </xs:complexType>
 
     <xs:simpleType name="arbiter-role">
@@ -80,15 +68,9 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="arbiter-license-entity">
-        <xs:restriction base="xs:string">
-            <xs:minLength value="1" />
-        </xs:restriction>
-    </xs:simpleType>
-
     <xs:complexType name="arbiter-license">
         <xs:simpleContent>
-            <xs:extension base="arbiter-license-entity">
+            <xs:extension base="str_minLength-1">
                 <xs:attribute name="federation">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">

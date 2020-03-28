@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<person>
+    <name type="string">Peter</name>
+    <identifiers>
+        <club federation="GER">
+            <name>SC Weiße Dame Ulm</name>
+            <id>D1234</id>
+            <member-id>123</member-id>
+        </club>
+    </identifiers>
+</person>

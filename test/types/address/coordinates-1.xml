@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<address>
+    <street>Park Avenue</street>
+    <city>London</city>
+    <coordinates type="WGS84">
+        <lon>8.1316291</lon>
+        <lat>49.305216</lat>
+    </coordinates>
+</address>
