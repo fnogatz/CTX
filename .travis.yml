@@ -2,4 +2,3 @@ language: java
 script:
   - make xerces
   - make test
-
