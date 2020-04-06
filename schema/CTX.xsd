@@ -597,7 +597,7 @@
 
                     <xs:element name="settings">
                         <xs:complexType>
-                            <xs:all>
+                            <xs:sequence>
                                 <xs:element name="general">
                                     <xs:complexType>
                                         <xs:sequence>
@@ -811,7 +811,7 @@
                                         </xs:sequence>
                                     </xs:complexType>
                                 </xs:element>
-                            </xs:all>
+                            </xs:sequence>
 
                             <xs:assert
                                 test="if (count(pairings/system/colors/max-difference) gt 0) then (xs:integer(pairings/system/colors/max-difference) le xs:integer(general/rounds)) else (true())"
@@ -1271,14 +1271,8 @@
                     </xs:element>
 
                     <xs:element name="settings">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="de">
-                                Generelle, statische Turniereinstellungen.
-                            </xs:documentation>
-                        </xs:annotation>
-
                         <xs:complexType>
-                            <xs:all>
+                            <xs:sequence>
                                 <xs:element name="general">
                                     <xs:annotation>
                                         <xs:documentation xml:lang="de">
@@ -1690,7 +1684,7 @@
                                         </xs:sequence>
                                     </xs:complexType>
                                 </xs:element>
-                            </xs:all>
+                            </xs:sequence>
                         </xs:complexType>
                     </xs:element>
 
