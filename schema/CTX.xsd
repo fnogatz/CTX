@@ -347,12 +347,12 @@
         </xs:assert>
 
         <xs:assert
-            test="(count(settings/general/games-per-round) eq 0) or (settings/general/games-per-round eq 1) or count(pairings//board/(white | black)) eq 0"
-            xerces:message="If multiple games are played per round, i.e. /tournament/settings/general/games-per-round is set and greater than 1, the competing players of each board must be referenced through the 'player' element and not by 'white' and 'black'.">
+            test="(count(settings/games-per-round) eq 0) or (settings/games-per-round eq 1) or count(pairings//board/(white | black)) eq 0"
+            xerces:message="If multiple games are played per round, i.e. /tournament/settings/games-per-round is set and greater than 1, the competing players of each board must be referenced through the 'player' element and not by 'white' and 'black'.">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Werden mehrere Partien pro Runde gespielt, d.h.
-                    /tournament/settings/general/games-per-round gt 1,
+                    /tournament/settings/games-per-round gt 1,
                     müssen die Spieler an einem Brett über das 'player'
                     Attribut referenziert werden und nicht wie bei
                     Einzelspielen über 'white' und 'black'.
@@ -362,17 +362,17 @@
 
         <xs:assert
             test="if (
-                            (count(settings/general/games-per-round) eq 0) or
-                            (settings/general/games-per-round eq 1)) 
+                            (count(settings/games-per-round) eq 0) or
+                            (settings/games-per-round eq 1)) 
                         then (count(pairings//board/games/game) eq 0)
                         else (true())"
-            xerces:message="If only one game is played per round, i.e. /tournament/settings/general/games-per-round is either not set or equal to 1, no 'games' element is allowed within a 'board' element in /tournament/pairings/(...).">
+            xerces:message="If only one game is played per round, i.e. /tournament/settings/games-per-round is either not set or equal to 1, no 'games' element is allowed within a 'board' element in /tournament/pairings/(...).">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Im Regelfall beinhaltet das /tournament/pairings-Element nur
                     'board'-Elemente, die kein 'games'-Unterelement beinhalten.
                     Nur bei Turnieren mit mehr als einer Partie pro Runde, d.h.
-                    /tournament/settings/general/games-per-round gt 1,
+                    /tournament/settings/games-per-round gt 1,
                     ist dieses 'games'-Kindelement erlaubt.
                 </xs:documentation>
             </xs:annotation>
@@ -380,21 +380,21 @@
 
         <xs:assert
             test="if (
-                            (count(settings/general/games-per-round) eq 0) or
-                            (settings/general/games-per-round eq 1)
+                            (count(settings/games-per-round) eq 0) or
+                            (settings/games-per-round eq 1)
                         ) then (
                             true()
                         ) else (
                             every $games in pairings//board/games satisfies (
-                                count($games/game) eq xs:integer(settings/general/games-per-round)
+                                count($games/game) eq xs:integer(settings/games-per-round)
                             ))"
-            xerces:message="If multiple games are played per round, i.e. /tournament/settings/general/games-per-round > 1, the number of 'game' elements in /tournament/pairings/(...)/board/games must be equal to this one specified in /tournament/settings/general/games-per-round.">
+            xerces:message="If multiple games are played per round, i.e. /tournament/settings/games-per-round > 1, the number of 'game' elements in /tournament/pairings/(...)/board/games must be equal to this one specified in /tournament/settings/games-per-round.">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Im Regelfall beinhaltet das /tournament/pairings-Element nur
                     'board'-Elemente, die kein 'games'-Unterelement beinhalten.
                     Nur bei Turnieren mit mehr als einer Partie pro Runde, d.h.
-                    /tournament/settings/general/games-per-round gt 1,
+                    /tournament/settings/games-per-round gt 1,
                     ist dieses 'games'-Kindelement erlaubt.
                 </xs:documentation>
             </xs:annotation>
@@ -402,18 +402,18 @@
 
         <xs:assert
             test="if (
-                            (count(settings/general/games-per-round) eq 0) or
-                            (settings/general/games-per-round eq 1)
+                            (count(settings/games-per-round) eq 0) or
+                            (settings/games-per-round eq 1)
                         ) then (
                             true()
                         ) else (
                             every $results in pairings//board/results/player satisfies (
-                                sum($results/*) le settings/general/games-per-round))"
-            xerces:message="If more than one game is played per round, i.e. /tournament/settings/general/games-per-round > 1, the number of results in /tournament/pairings/(...)/board/results/player must be less or equal to the number of games specified in /tournament/settings/general/games-per-round.">
+                                sum($results/*) le settings/games-per-round))"
+            xerces:message="If more than one game is played per round, i.e. /tournament/settings/games-per-round > 1, the number of results in /tournament/pairings/(...)/board/results/player must be less or equal to the number of games specified in /tournament/settings/games-per-round.">
             <xs:annotation>
                 <xs:documentation xml:lang="de">
                     Werden mehrere Partien pro Runde gespielt, d.h. 
-                    /tournament/settings/general/games-per-round > 1, darf die Summe
+                    /tournament/settings/games-per-round > 1, darf die Summe
                     der Resultate in /tournament/pairings/(...)/board/results/player
                     die Anzahl der Partien pro Runde nicht überschreiten.
                 </xs:documentation>
@@ -421,11 +421,11 @@
         </xs:assert>
 
         <xs:assert
-            test="every $roundno in pairings//round/@number satisfies ($roundno le settings/general/rounds)"
-            xerces:message="Every round number in /tournament/pairings//round/@number must be less or equal to the specified one in /tournament/settings/general/rounds." />
+            test="every $roundno in pairings//round/@number satisfies ($roundno le settings/rounds)"
+            xerces:message="Every round number in /tournament/pairings//round/@number must be less or equal to the specified one in /tournament/settings/rounds." />
         <xs:assert
-            test="every $roundno in rankings//rounds/round/@number satisfies ($roundno le settings/general/rounds)"
-            xerces:message="Every round number in /tournament/rankings//round/@number must be less or equal to the specified one in /tournament/settings/general/rounds." />
+            test="every $roundno in rankings//rounds/round/@number satisfies ($roundno le settings/rounds)"
+            xerces:message="Every round number in /tournament/rankings//round/@number must be less or equal to the specified one in /tournament/settings/rounds." />
 
         <xs:assert
             test="if (count(pairings/inning) gt 0) then (
@@ -598,14 +598,8 @@
                     <xs:element name="settings">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element name="general">
-                                    <xs:complexType>
-                                        <xs:sequence>
-                                            <xs:element name="rounds" type="xs:positiveInteger" />
-                                            <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0" default="1" />
-                                        </xs:sequence>
-                                    </xs:complexType>
-                                </xs:element>
+                                <xs:element name="rounds" type="xs:positiveInteger" />
+                                <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0" default="1" />
 
                                 <xs:element name="points-system" type="game-points-individual" minOccurs="0">
                                     <xs:unique name="s_unique-game-points-individuals_win">
@@ -815,13 +809,13 @@
 
                             <xs:assert
                                 test="if (count(pairings/system/colors/max-difference) gt 0) then (xs:integer(pairings/system/colors/max-difference) le xs:integer(general/rounds)) else (true())"
-                                xerces:message="The maximal color difference, specified in /tournament/settings/pairings/system/colors/max-difference, must be less or equal to the number of rounds, /tournament/settings/general/rounds." />
+                                xerces:message="The maximal color difference, specified in /tournament/settings/pairings/system/colors/max-difference, must be less or equal to the number of rounds, /tournament/settings/rounds." />
                             <xs:assert
                                 test="if (count(pairings/system/colors/max-series) gt 0) then (xs:integer(pairings/system/colors/max-series) le xs:integer(general/rounds)) else (true())"
-                                xerces:message="The maximal color series, specified in /tournament/settings/pairings/system/colors/max-series, must be less or equal to the number of rounds, /tournament/settings/general/rounds." />
+                                xerces:message="The maximal color series, specified in /tournament/settings/pairings/system/colors/max-series, must be less or equal to the number of rounds, /tournament/settings/rounds." />
                             <xs:assert
                                 test="every $round in pairings/system/pairing-constraints/constraint/rounds/round satisfies (xs:integer($round) le xs:integer(general/rounds))"
-                                xerces:message="Every round number listed in /tournament/settings/pairings/system/pairing-constraints/constraint/rounds/round must be less or equal to the number of rounds, /tournament/settings/general/rounds." />
+                                xerces:message="Every round number listed in /tournament/settings/pairings/system/pairing-constraints/constraint/rounds/round must be less or equal to the number of rounds, /tournament/settings/rounds." />
                         </xs:complexType>
                     </xs:element>
 
@@ -1273,93 +1267,76 @@
                     <xs:element name="settings">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element name="general">
+                                <xs:element name="rounds" type="xs:positiveInteger">
                                     <xs:annotation>
                                         <xs:documentation xml:lang="de">
-                                            Allgemeine Turniereinstellungen wie Rundenzahl,
-                                            Spieler pro Mannschaft, etc.
+                                            Anzahl der Runden.
+                                            Pflichtangabe.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+
+                                <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="de">
+                                            Partien pro Runde.
+                                            Optional. Implizit 1.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:element>
+
+                                <xs:element name="boards">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="de">
+                                            Anzahl der Brettern, an denen ein Mannschaftskampf
+                                            ausgetragen wird. Mindestens 2.
+                                            Pflichtangabe.
                                         </xs:documentation>
                                     </xs:annotation>
 
                                     <xs:complexType>
-                                        <xs:sequence>
-                                            <xs:element name="rounds" type="xs:positiveInteger">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Anzahl der Runden.
-                                                        Pflichtangabe.
-                                                    </xs:documentation>
-                                                </xs:annotation>
-                                            </xs:element>
+                                        <xs:simpleContent>
+                                            <xs:extension base="_t_number-of-boards">
+                                                <xs:attribute name="colors" use="optional">
+                                                    <xs:annotation>
+                                                        <xs:documentation xml:lang="de">
+                                                            Angabe der Farbverteilung als Liste von ("w"|"b")-Einträgen,
+                                                            aus Sicht der erstgenannten Mannschaft.
+                                                            Optional. Wenn angegeben, werden die Paarungen entsprechend
+                                                            validiert. [TODO]
+                                                        </xs:documentation>
+                                                    </xs:annotation>
 
-                                            <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Partien pro Runde.
-                                                        Optional. Implizit 1.
-                                                    </xs:documentation>
-                                                </xs:annotation>
-                                            </xs:element>
+                                                    <xs:simpleType>
+                                                        <xs:list>
+                                                            <xs:simpleType>
+                                                                <xs:restriction base="xs:string">
+                                                                    <xs:enumeration value="w" />
+                                                                    <xs:enumeration value="b" />
+                                                                </xs:restriction>
+                                                            </xs:simpleType>
+                                                        </xs:list>
+                                                    </xs:simpleType>
+                                                </xs:attribute>
 
-                                            <xs:element name="boards">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="de">
-                                                        Anzahl der Brettern, an denen ein Mannschaftskampf
-                                                        ausgetragen wird. Mindestens 2.
-                                                        Pflichtangabe.
-                                                    </xs:documentation>
-                                                </xs:annotation>
-
-                                                <xs:complexType>
-                                                    <xs:simpleContent>
-                                                        <xs:extension base="_t_number-of-boards">
-                                                            <xs:attribute name="colors" use="optional">
-                                                                <xs:annotation>
-                                                                    <xs:documentation xml:lang="de">
-                                                                        Angabe der Farbverteilung als Liste von ("w"|"b")-Einträgen,
-                                                                        aus Sicht der erstgenannten Mannschaft.
-                                                                        Optional. Wenn angegeben, werden die Paarungen entsprechend
-                                                                        validiert. [TODO]
-                                                                    </xs:documentation>
-                                                                </xs:annotation>
-
-                                                                <xs:simpleType>
-                                                                    <xs:list>
-                                                                        <xs:simpleType>
-                                                                            <xs:restriction base="xs:string">
-                                                                                <xs:enumeration value="w" />
-                                                                                <xs:enumeration value="b" />
-                                                                            </xs:restriction>
-                                                                        </xs:simpleType>
-                                                                    </xs:list>
-                                                                </xs:simpleType>
-                                                            </xs:attribute>
-
-                                                            <xs:assert
-                                                                test="not(@colors) or count(tokenize(xs:string(@colors), ' ')) eq xs:integer(.)"
-                                                                xerces:message="The number of listed @colors must be equal to the number of boards." />
-                                                        </xs:extension>
-                                                    </xs:simpleContent>
-                                                </xs:complexType>
-                                            </xs:element>
-
-                                            <xs:element name="team-members" minOccurs="0">
-                                                <xs:annotation>
-                                                    <xs:documentation xml:lang="en">
-                                                        Optional maximum number of team members. Either integer or "unbounded".
-                                                    </xs:documentation>
-                                                </xs:annotation>
-
-                                                <xs:simpleType>
-                                                    <xs:union memberTypes="xs:positiveInteger str_unbounded" />
-                                                </xs:simpleType>
-                                            </xs:element>
-                                        </xs:sequence>
-
-                                        <xs:assert
-                                            test="if (count(team-members) eq 0 or xs:string(team-members) eq 'unbounded') then (true()) else (xs:integer(team-members) ge xs:integer(boards))"
-                                            xerces:message="The maximal number of team-members must be greater or equal to the number of boards." />
+                                                <xs:assert
+                                                    test="not(@colors) or count(tokenize(xs:string(@colors), ' ')) eq xs:integer(.)"
+                                                    xerces:message="The number of listed @colors must be equal to the number of boards." />
+                                            </xs:extension>
+                                        </xs:simpleContent>
                                     </xs:complexType>
+                                </xs:element>
+
+                                <xs:element name="team-members" minOccurs="0">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="en">
+                                            Optional maximum number of team members. Either integer or "unbounded".
+                                        </xs:documentation>
+                                    </xs:annotation>
+
+                                    <xs:simpleType>
+                                        <xs:union memberTypes="xs:positiveInteger str_unbounded" />
+                                    </xs:simpleType>
                                 </xs:element>
 
                                 <xs:element name="pairings" minOccurs="0">
@@ -1685,6 +1662,10 @@
                                     </xs:complexType>
                                 </xs:element>
                             </xs:sequence>
+
+                            <xs:assert
+                                test="if (count(team-members) eq 0 or xs:string(team-members) eq 'unbounded') then (true()) else (xs:integer(team-members) ge xs:integer(boards))"
+                                xerces:message="The maximal number of team-members must be greater or equal to the number of boards." />
                         </xs:complexType>
                     </xs:element>
 
@@ -1859,11 +1840,11 @@
                 </xs:assert>
 
                 <xs:assert
-                    test="every $table in pairings//round/tables/table[boards] satisfies (count($table/boards/board) eq xs:integer(settings/general/boards))"
-                    xerces:message="The number of boards given in /tournament/pairings//round/tables/boards must be equal to the saved one in /tournament/settings/general/boards." />
+                    test="every $table in pairings//round/tables/table[boards] satisfies (count($table/boards/board) eq xs:integer(settings/boards))"
+                    xerces:message="The number of boards given in /tournament/pairings//round/tables/boards must be equal to the saved one in /tournament/settings/boards." />
                 <xs:assert
-                    test="every $team in pairings//round/tables/table/results/team satisfies (sum($team/*) le xs:integer(settings/general/boards))"
-                    xerces:message="The number of results given in /tournament/pairings//round/tables/results/team must be less or equal to the specified number of boards in /tournament/settings/general/boards." />
+                    test="every $team in pairings//round/tables/table/results/team satisfies (sum($team/*) le xs:integer(settings/boards))"
+                    xerces:message="The number of results given in /tournament/pairings//round/tables/results/team must be less or equal to the specified number of boards in /tournament/settings/boards." />
                 <xs:assert
                     test="every $id in teams/team/@id satisfies ( count(rankings/initial/team[@id eq $id]) eq 1 )"
                     xerces:message="Every team listed in /tournament/teams must also be listed in the initial ranking." />
@@ -1911,20 +1892,20 @@
                 </xs:assert>
 
                 <xs:assert
-                    test="if (settings/general/boards/@colors) then (
+                    test="if (settings/boards/@colors) then (
                                 every $table in (pairings | pairings/inning[@number mod 2 eq 1]/rounds)/round/tables/table[boards] satisfies (
                                     every $boardno in 1 to count($table/boards/board) satisfies (
-                                        if (tokenize(xs:string(settings/general/boards/@colors), ' ')[$boardno] eq 'w') then (
+                                        if (tokenize(xs:string(settings/boards/@colors), ' ')[$boardno] eq 'w') then (
                                             $table/boards/board[$boardno]/(black | player[2])/@team eq $table/team[@position eq 2]/@id and
                                             $table/boards/board[$boardno]/(white | player[1])/@team eq $table/team[@position eq 1]/@id
                                         ) else (
                                             $table/boards/board[$boardno]/(black | player[2])/@team eq $table/team[@position eq 1]/@id and
                                             $table/boards/board[$boardno]/(white | player[1])/@team eq $table/team[@position eq 2]/@id))))
                             else ( true() )"
-                    xerces:message="The players must have the colors according to the listing in /tournament/settings/general/boards/@colors.">
+                    xerces:message="The players must have the colors according to the listing in /tournament/settings/boards/@colors.">
                     <xs:annotation>
                         <xs:documentation xml:lang="de">
-                            Wurde unter /tournament/settings/general/boards/@colors
+                            Wurde unter /tournament/settings/boards/@colors
                             die Farbverteilung in den Mannschaftskämpfen angegeben,
                             so muss diese in den einzelnen Begegnungen eingehalten
                             werden.
@@ -1954,11 +1935,11 @@
                 </xs:assert>
 
                 <xs:assert
-                    test="if (settings/general/team-members and xs:string(settings/general/team-members) ne 'unbounded') then (
+                    test="if (settings/team-members and xs:string(settings/team-members) ne 'unbounded') then (
                                 every $team in teams/team satisfies(
-                                    count($team/players/player) le xs:integer(settings/general/team-members)))
+                                    count($team/players/player) le xs:integer(settings/team-members)))
                             else (true())"
-                    xerces:message="The number of players of each team must be less or equal to the number specified in /tournament/settings/general/team-members." />
+                    xerces:message="The number of players of each team must be less or equal to the number specified in /tournament/settings/team-members." />
 
                 <xs:assert
                     test="every $federation_code in distinct-values(data(teams/team/identifiers/federation/@code)) satisfies (

@@ -13,10 +13,8 @@
         </time-controls>
     </information>
     <settings>
-        <general>
-            <rounds>7</rounds>
-            <boards>8</boards>
-        </general>
+        <rounds>7</rounds>
+        <boards>8</boards>
     </settings>
     <players>
         <player id="1">

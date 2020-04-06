@@ -12,9 +12,7 @@
         </time-controls>
     </information>
     <settings>
-        <general>
-            <rounds>9</rounds>
-        </general>
+        <rounds>9</rounds>
     </settings>
     <players>
         <player id="1">
