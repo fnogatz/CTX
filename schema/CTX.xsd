@@ -1268,21 +1268,13 @@
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="rounds" type="xs:positiveInteger" minOccurs="0" />
-                                <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0">
-                                    <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Partien pro Runde.
-                                            Optional. Implizit 1.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:element>
+                                <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0" />
 
                                 <xs:element name="boards">
                                     <xs:annotation>
                                         <xs:documentation xml:lang="de">
                                             Anzahl der Brettern, an denen ein Mannschaftskampf
                                             ausgetragen wird. Mindestens 2.
-                                            Pflichtangabe.
                                         </xs:documentation>
                                     </xs:annotation>
 
