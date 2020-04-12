@@ -598,7 +598,7 @@
                     <xs:element name="settings">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element name="rounds" type="xs:positiveInteger" />
+                                <xs:element name="rounds" type="xs:positiveInteger" minOccurs="0" />
                                 <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0" default="1" />
 
                                 <xs:element name="points-system" type="game-points-individual" minOccurs="0">
@@ -1267,15 +1267,7 @@
                     <xs:element name="settings">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element name="rounds" type="xs:positiveInteger">
-                                    <xs:annotation>
-                                        <xs:documentation xml:lang="de">
-                                            Anzahl der Runden.
-                                            Pflichtangabe.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:element>
-
+                                <xs:element name="rounds" type="xs:positiveInteger" minOccurs="0" />
                                 <xs:element name="games-per-round" type="xs:positiveInteger" minOccurs="0">
                                     <xs:annotation>
                                         <xs:documentation xml:lang="de">
